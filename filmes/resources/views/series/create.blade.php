@@ -1,4 +1,4 @@
-<x-layout title="Nova Série">
+<x-layout title="Novo Filme">
     <form action="{{ route('series.store') }}" method="post">
         @csrf
 

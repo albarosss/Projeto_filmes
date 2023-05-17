@@ -1,17 +1,22 @@
-<x-layout title="Séries" :mensagem-sucesso="$mensagemSucesso">
+<x-layout title="Filmes" :mensagem-sucesso="$mensagemSucesso">
     @auth
     <a href="{{ route('series.create') }}" class="btn btn-dark mb-2">Adicionar</a>
     @endauth
 
-    <ul class="list-group">
+    <ul class="list-group flex-row">
         @foreach ($series as $serie)
-        <li class="list-group-item d-flex justify-content-between align-items-center">
+        <li class="d-flex align-items-center" style="margin: 10px; padding: 5px; width:fit-content; height:fit-content;" >
+            <div class="card">
+                <img src="{{ asset('filmes_capa/capa_padrao.avif') }}" alt="Card Image" style="width:100%">
+                <div class="card-content">
+                    <h3 class="card-title">{{ $serie->nome }}</h3>
+                    <p class="card-description">Descrição do filme.</p>
+                    <a href="{{ route('seasons.index', $serie->id) }}" class="card-button">Saiba mais</a>
+                </div>
+            </div>
 
-            @auth <a href="{{ route('seasons.index', $serie->id) }}"> @endauth
-                {{ $serie->nome }}
-            @auth </a> @endauth
 
-            @auth
+            {{-- @auth
             <span class="d-flex">
                 <a href="{{ route('series.edit', $serie->id) }}" class="btn btn-primary btn-sm">
                     E
@@ -25,7 +30,7 @@
                     </button>
                 </form>
             </span>
-            @endauth
+            @endauth --}}
         </li>
         @endforeach
     </ul>

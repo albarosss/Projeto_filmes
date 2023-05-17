@@ -37,6 +37,9 @@ Route::middleware('guest')->group(function () {
                 ->name('password.update');
 });
 
+Route::get('/', function () {
+    return redirect('/series');
+});
 Route::resource('/series', SeriesController::class)
     ->except(['show']);
 Route::middleware('auth')->group(function () {
@@ -59,9 +62,6 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->name('logout');
 
-    Route::get('/', function () {
-        return redirect('/series');
-    });
     Route::get('/series/{series}/seasons', [SeasonsController::class, 'index'])
         ->name('seasons.index');
 
