@@ -15,15 +15,7 @@
     <div class="container-fluid">
         <a href="{{ route('series.index') }}">
             <div class="div_bola bg-white"
-                style="
-                width: 65px;
-                height: 65px;
-                border-radius: 50%;
-                background-image: url({{ asset('logos/logo.png') }});
-                background-size: 140px;
-                user-select: none;
-                background-position: center;
-                ">
+                style="background-image: url({{ asset('logos/logo.png') }});">
             </div>
         </a>
 

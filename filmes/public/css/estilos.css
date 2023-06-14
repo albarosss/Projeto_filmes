@@ -11281,3 +11281,14 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+
+
+.div_bola
+{
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background-size: 140px;
+    user-select: none;
+    background-position: center;
+}
