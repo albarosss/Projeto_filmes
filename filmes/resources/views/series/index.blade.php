@@ -3,7 +3,7 @@
     <a href="{{ route('series.create') }}" class="btn btn-dark mb-2">Adicionar</a>
     @endauth
 
-    <ul class="list-group flex-row">
+    <ul class="list-group flex-row cards-container">
         @foreach ($series as $serie)
         <li class="d-flex align-items-center" style="margin: 10px; padding: 5px; width:fit-content; height:fit-content;" >
             <div class="card">
