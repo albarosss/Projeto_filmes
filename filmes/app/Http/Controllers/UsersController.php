@@ -22,6 +22,6 @@ class UsersController
         $user = User::create($data);
         Auth::login($user);
 
-        return to_route('series.index');
+        return to_route('filmes.index');
     }
 }

@@ -13,7 +13,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-dark">
     <div class="container-fluid">
-        <a href="{{ route('series.index') }}">
+        <a href="{{ route('filmes.index') }}">
             <div class="div_bola bg-white"
                 style="background-image: url({{ asset('logos/logo.png') }});">
             </div>

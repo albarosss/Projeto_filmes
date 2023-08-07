@@ -18,7 +18,7 @@ class LoginController
             return redirect()->back()->withErrors('Usuário ou senha inválidos');
         }
 
-        return to_route('series.index');
+        return to_route('filmes.index');
     }
 
     public function destroy()
