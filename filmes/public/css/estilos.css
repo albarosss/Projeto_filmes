@@ -126,7 +126,8 @@ h3, .h3 {
 }
 @media (min-width: 1200px) {
   h3, .h3 {
-    font-size: 1.75rem;
+    font-family:cursive;
+    font-size: 1.45rem;
   }
 }
 
@@ -5057,6 +5058,7 @@ textarea.form-control-lg {
   padding-left: 0;
   margin-bottom: 0;
   border-radius: 0.25rem;
+  justify-content: space-around;
 }
 
 .list-group-numbered {

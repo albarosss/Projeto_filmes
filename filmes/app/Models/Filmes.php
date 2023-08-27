@@ -17,4 +17,10 @@ class Filmes extends Model
             $queryBuilder->orderBy('nome');
         });
     }
+
+    public function comentarios()
+    {
+        return $this->hasMany(Comentarios::class, 'filme_id'); // Verifique se o segundo parâmetro é 'filme_id'
+    }
+
 }

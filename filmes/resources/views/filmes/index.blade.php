@@ -1,9 +1,16 @@
 <x-layout title="Filmes" :mensagem-sucesso="$mensagemSucesso">
-    @auth
-    <a href="{{ route('filmes.create') }}" class="btn btn-dark mb-2">Adicionar</a>
-    @endauth
 
     <div class="cards-container">
+        @auth
+        @if ($isAdmin)
+            <a href="{{ route('filmes.create') }}" class="adc_filmes btn btn-dark mb-2">Adicionar</a>
+        @endif
+        @endauth
+        {{-- <form action="{{ route('filmes.index') }}" method="GET" class="search-form">
+            <input type="text" name="search" placeholder="Pesquisar filmes...">
+            <button type="submit">Buscar</button>
+        </form> --}}
+
         @php $count = 0 @endphp
         @foreach ($filmes as $filme)
             @if ($count % 3 === 0)
@@ -17,7 +24,7 @@
                     <img src="{{ asset('filmes_capa/capa_padrao.avif') }}" alt="Card Image" style="width:100%">
                     <div class="card-content">
                         <h3 class="card-title">{{ $filme->nome }}</h3>
-                        <p class="card-description">Descrição do filme.</p>
+                        <p class="card-description">{{ $filme->descricao }}</p>
                         <a href="{{ route('filmes.saiba_mais', $filme->id) }}" class="card-button">Saiba mais</a>
                     </div>
                 </div>

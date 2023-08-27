@@ -1,0 +1,41 @@
+p {
+    font-family: Arial, sans-serif;
+}
+
+
+
+.card_v {
+    margin: 10px;
+    padding: 10px;
+    display: flex;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    align-items: center;
+}
+
+.card_v img {
+    width: 500px;
+    height: 300px;
+    object-fit: cover;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.card_v-body {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    height: 130px;
+    padding: 20px;
+    text-align: center;
+}
+
+.card_v-body p {
+    font-size: 18px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.card_v-body p strong {
+    font-weight: bold;
+}
+
+

@@ -40,6 +40,11 @@ Route::get('/', function () {
 });
 Route::resource('/filmes', FilmesController::class)
     ->except(['show']);
+
+Route::get('/filmes/{filmes}/filmes', [FilmesController::class, 'saibaMais'])
+->name('filmes.saiba_mais');
+
+
 Route::middleware('auth')->group(function () {
     Route::get('verify-email', [EmailVerificationPromptController::class, '__invoke'])
                 ->name('verification.notice');
@@ -60,8 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->name('logout');
 
-    Route::get('/filmes/{filmes}/filmes', [FilmesController::class, 'saibaMais'])
-        ->name('filmes.saiba_mais');
-
+    Route::post('/filmes/{filmes}/comentar', [FilmesController::class, 'comentar'])
+    ->name('filmes.comentar');
 
 });
