@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/card/card.css') }}">
     <link rel="stylesheet" href="{{ asset('css/estilos.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/saiba_mais/saibamais.css') }}">
+
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-dark">
@@ -18,7 +20,6 @@
                 style="background-image: url({{ asset('logos/logo.png') }});">
             </div>
         </a>
-
 
         @auth
         <form action="{{ route('logout') }}" method="post">
@@ -39,7 +40,7 @@
     </div>
 </nav>
 <div class="container">
-    <h1>{{ $title }}</h1>
+    {{-- <h1>{{ $title }}</h1> --}}
 
     @isset($mensagemSucesso)
         <div class="alert alert-success">

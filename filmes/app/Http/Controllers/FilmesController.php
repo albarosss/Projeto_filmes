@@ -16,11 +16,21 @@ class FilmesController extends Controller
 
     public function index(Request $request)
     {
+        $user = auth()->user();
+        $isAdmin = $user && $user->admin == 1;
+
         $filmes = Filmes::all();
         $mensagemSucesso = session('mensagem.sucesso');
 
-        return view('filmes.index')->with('filmes', $filmes)
-            ->with('mensagemSucesso', $mensagemSucesso);
+        return view('filmes.index', [
+            'filmes' => $filmes,
+            'title' => 'Lista de Filmes',
+            'isAdmin' => $isAdmin,
+        ])->with('filmes', $filmes)
+        ->with('mensagemSucesso', $mensagemSucesso);
+
+
+
     }
 
     public function create()

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Filmes extends Model
 {
     use HasFactory;
-    protected $fillable = ['nome', 'descricao', 'categoria'];
+    protected $fillable = ['nome', 'descricao', 'categoria','resumo'];
 
     protected static function booted()
     {

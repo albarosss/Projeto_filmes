@@ -25,6 +25,7 @@
             </div>
         </div>
 
+
         <div class="row mb-3">
             <div class="col-6">
                 <label for="categoria" class="form-label">Categoria:</label>
@@ -34,6 +35,17 @@
                     <option value="terror">Terror</option>
                     <option value="romance">Romance</option>
                 </select>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-6">
+                <label for="resumo" class="form-label">Resumo:</label>
+                <textarea
+                id="resumo"
+                name="resumo"
+                class="form-control"
+                value="{{ old('resumo') }}"></textarea>
             </div>
         </div>
 
