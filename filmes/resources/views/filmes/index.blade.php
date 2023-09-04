@@ -18,9 +18,11 @@
             @if ($bestRatedFilmes->isNotEmpty())
                 <h3>Filmes melhores Avaliados!</h3>
                 <div class="pagination-container"> <!-- Adicione a classe pagination-container aqui -->
-                    <button class="pagination-button prev" onclick="pageAnt()" @if ($bestRatedFilmes->currentPage() == 1) disabled @endif>
-                        <
-                    </button>
+                    @if ($bestRatedFilmes->currentPage() > 1)
+                        <button class="pagination-button prev" onclick="pageAnt()">
+                            <
+                        </button>
+                    @endif
 
                     <ul class="list-group">
                         <li class="list-group-item d-flex" style="justify-content: space-evenly; min-width: 1225px;">
@@ -38,9 +40,11 @@
                         </li>
                     </ul>
 
-                    <button class="pagination-button next" onclick="nextPage()" @if (!$bestRatedFilmes->hasMorePages()) disabled @endif>
-                        >
-                    </button>
+                    @if ($bestRatedFilmes->hasMorePages())
+                        <button class="pagination-button next" onclick="nextPage()">
+                            >
+                        </button>
+                    @endif
                 </div>
 
                 {{ $bestRatedFilmes->links('pagination.custom') }}

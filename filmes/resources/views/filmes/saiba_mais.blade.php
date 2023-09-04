@@ -30,7 +30,7 @@
                             <div class="comentario-content">
                                 <p class="comentario-text">
                                     <strong>{{ $comentario->usuario->name }}:</strong>
-                                    <span style="float: right;"> <!-- Adicione um estilo inline para alinhar o texto à direita -->
+                                    <span class="text-{{ ($lado === 'esquerda') ? 'right' : 'left' }}"> <!-- Adicione um estilo inline para alinhar o texto à direita -->
                                         @for ($i = 1; $i <= 5; $i++)
                                             @if ($i <= $comentario->avaliacao)
                                                 <span class="starC active">&#9733;</span>

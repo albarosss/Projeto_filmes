@@ -53,8 +53,6 @@ class FilmesController extends Controller
         ->orderByDesc('media_avaliacao')
         ->paginate(3); // Defina o número de filmes por página (3 no seu caso)
 
-
-
         return view('filmes.index', [
             'filmes' => $filmes,
             'bestRatedFilmes' => $bestRatedFilmes, // Passando os filmes com melhores avaliações para a vista

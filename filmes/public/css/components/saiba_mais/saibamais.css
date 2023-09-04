@@ -140,3 +140,11 @@ p {
 .starC.active {
     color: #f0a800;
 }
+
+.text-left {
+    float: left;
+}
+
+.text-right {
+    float: right;
+}
