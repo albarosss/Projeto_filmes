@@ -6,19 +6,19 @@
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin: 20px;
-    min-height: 525px;
+    min-height: 500px;
     overflow: hidden;
   }
 
   .card img {
-    min-height: 350px;
+    min-height: 300px;
     width: 100%;
     border-radius: 5px 5px 0 0;
   }
 
   .card-content {
     max-width: 300px;
-    min-height: 226px;
+    min-height: 220px;
     padding: 20px;
     text-align: center;
     border: 2px solid #bbb8b8;

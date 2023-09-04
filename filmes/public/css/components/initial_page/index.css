@@ -95,3 +95,31 @@
     border-radius: 50%;
     margin-right: 10px; /* Aumente a margem para mais espaço */
 }
+
+.pagination-button {
+    width: 30px;
+    height: 30px;
+    background-color: #007bff; /* Cor de fundo azul */
+    border-radius: 50%;
+    text-align: center;
+    line-height: 30px;
+    cursor: pointer;
+    margin: 0 5px; /* Espaçamento entre os botões */
+    color: #fff; /* Cor do texto branco */
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.pagination-button.prev::before {
+    content: '\2190'; /* Código Unicode para seta esquerda */
+}
+
+.pagination-button.next::before {
+    content: '\2192'; /* Código Unicode para seta direita */
+}
+
+/* Centralizar verticalmente o contêiner de botões */
+.pagination-container {
+    display: flex;
+    align-items: center;
+}

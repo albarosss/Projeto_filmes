@@ -5,10 +5,18 @@ p {
 .infos_filme {
     overflow-y: auto; /* Ativar rolagem vertical quando o conteúdo exceder a altura */
     overflow-x: hidden; /* Ativar rolagem vertical quando o conteúdo exceder a altura */
+    width: 90%;
+    min-width: 300px;
+    scrollbar-width: thin;
+    scrollbar-color: #aaa #eee;
 }
 
+.infos_filme ::-webkit-scrollbar-thumb {
+    background-color: #aaa; /* Define a cor do botão da barra de rolagem */
+}
 
 .card_v {
+    height: 500px;
     margin: 10px;
     padding: 10px;
     display: flex;
@@ -27,7 +35,7 @@ p {
     display: flex;
     width: 100%;
     justify-content: center;
-    height: 130px;
+    height: 205px;
     padding: 20px;
     text-align: center;
 }

@@ -45,13 +45,13 @@ class FilmesController extends Controller
         $filmes = Filmes::all();
         $mensagemSucesso = session('mensagem.sucesso');
 
-        $bestRatedFilmes = DB::table('filmes')
+        $bestRatedFilmes = $bestRatedFilmes = DB::table('filmes')
         ->join('comentarios', 'filmes.id', '=', 'comentarios.filme_id')
         ->select('filmes.id', 'filmes.nome', 'filmes.resumo', DB::raw('ROUND(AVG(comentarios.avaliacao), 2) as media_avaliacao'))
         ->groupBy('filmes.id', 'filmes.nome', 'filmes.resumo')
         ->havingRaw('AVG(comentarios.avaliacao) > 4')
         ->orderByDesc('media_avaliacao')
-        ->get();
+        ->paginate(3); // Defina o número de filmes por página (3 no seu caso)
 
 
 

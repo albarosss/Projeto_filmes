@@ -71,6 +71,6 @@
         </form>
     </div>
 
-<script src="{{ asset('js/saiba-mais/index.js') }}"></script>
+    <script src="{{ asset('js/saiba-mais/index.js') }}"></script>
 
 </x-layout>
