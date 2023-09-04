@@ -126,7 +126,8 @@ h3, .h3 {
 }
 @media (min-width: 1200px) {
   h3, .h3 {
-    font-size: 1.75rem;
+    font-family:cursive;
+    font-size: 1.45rem;
   }
 }
 

@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'failed' => 'Dados não encontrados u não registrados.',
+    'failed' => 'Dados não encontrados ou não registrados.',
     'password' => 'A senha informada está incorreta.',
     'throttle' => 'Muitas tentativas de login. Por favor tente novamente em :seconds segundos.',
 

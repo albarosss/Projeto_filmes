@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Filmes extends Model
 {
     use HasFactory;
-    protected $fillable = ['nome', 'descricao', 'categoria','resumo'];
+    protected $fillable = ['nome', 'descricao', 'categoria','resumo', 'avaliacao'];
 
     protected static function booted()
     {
@@ -17,4 +17,10 @@ class Filmes extends Model
             $queryBuilder->orderBy('nome');
         });
     }
+
+    public function comentarios()
+    {
+        return $this->hasMany(Comentarios::class, 'filme_id'); // Verifique se o segundo parâmetro é 'filme_id'
+    }
+
 }

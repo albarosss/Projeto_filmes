@@ -2,6 +2,10 @@ p {
     font-family: Arial, sans-serif;
 }
 
+.infos_filme {
+    overflow-y: auto; /* Ativar rolagem vertical quando o conteúdo exceder a altura */
+    overflow-x: hidden; /* Ativar rolagem vertical quando o conteúdo exceder a altura */
+}
 
 
 .card_v {
@@ -13,7 +17,7 @@ p {
 }
 
 .card_v img {
-    width: 500px;
+    width: 200px;
     height: 300px;
     object-fit: cover;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -38,4 +42,93 @@ p {
     font-weight: bold;
 }
 
+.comentario {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+}
+.card_v {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px; /* Adicione margem inferior para separar do próximo elemento */
+}
 
+.espacamento {
+    height: 20px; /* Define um espaço entre o card do filme e os comentários */
+}
+
+.comentarios {
+    margin-top: 20px; /* Adicione margem superior para separar dos elementos acima */
+}
+
+.esquerda {
+    text-align: left;
+    background-color: #f5f5f5;
+}
+
+.direita {
+    text-align: right;
+    background-color: #e0e0e0;
+}
+
+.comentar-form {
+    margin-top: 20px;
+}
+
+.comentario-container {
+    display: flex;
+    align-items: center;
+}
+
+#comentarB {
+    flex: 1;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-right: 10px;
+    width: 90%;
+}
+
+.enviar-btn {
+    background-color: #212529;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.enviar-btn:hover {
+    background-color: #242a30;
+}
+
+
+.rating {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.star {
+    font-size: 24px;
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.3s;
+}
+.starC {
+    font-size: 24px;
+    color: #ccc;
+    transition: color 0.3s;
+}
+
+.star:hover,
+.star.active {
+    color: #f0a800;
+}
+.starC.active {
+    color: #f0a800;
+}

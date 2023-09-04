@@ -1,0 +1,97 @@
+
+/* Estilos para o botão Sair */
+.btn-logout {
+    background-color: transparent;
+    border: none;
+    color: #333;
+    cursor: pointer;
+}
+
+/* Estilos para o menu do usuário */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    background-color: transparent;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    outline: none;
+}
+
+.profile-image {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.dropdown-content button {
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: none;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+
+/* Estilos para o menu do usuário */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Estilos para o botão dropdown */
+.dropbtn {
+    background-color: transparent;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    outline: none;
+}
+
+/* Ajuste para o dropdown aparecer mais à esquerda */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    right: 0; /* Adicione esta propriedade */
+}
+
+/* Estilo dos itens do dropdown */
+.dropdown-content .btn-logout {
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+    color: #333;
+}
+
+/* Estilo dos itens do dropdown quando o mouse está sobre eles */
+.dropdown-content .btn-logout:hover,
+.dropdown-content .btn-logout:focus {
+    background-color: #c5c5c5;
+    /* Outros estilos que você deseja aplicar quando o mouse está sobre ou o item está em foco */
+}
+
+
+/* Estilos para a imagem do perfil */
+.profile-image {
+    width: 40px; /* Aumente o tamanho da imagem */
+    height: 40px; /* Aumente o tamanho da imagem */
+    border-radius: 50%;
+    margin-right: 10px; /* Aumente a margem para mais espaço */
+}

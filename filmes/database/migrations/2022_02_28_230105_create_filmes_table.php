@@ -15,10 +15,10 @@ return new class extends Migration
     {
         Schema::create('filmes', function (Blueprint $table) {
             $table->id();
-            $table->string('nome', 128);
-            $table->string('descricao', 500);
-            $table->string('categoria', 128);
-            $table->string('resumo', 128);
+            $table->string('nome', 328);
+            $table->text('descricao');
+            $table->string('categoria', 100);
+            $table->text('resumo');
             $table->timestamps();
         });
     }
