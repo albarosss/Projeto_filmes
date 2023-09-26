@@ -10,7 +10,9 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\FilmesController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\DiretoresController;
 use Illuminate\Support\Facades\Route;
+
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -49,6 +51,12 @@ Route::get('/filmes/{filmes}/filmes', [FilmesController::class, 'saibaMais'])
 Route::middleware('auth')->group(function () {
     Route::get('verify-email', [EmailVerificationPromptController::class, '__invoke'])
                 ->name('verification.notice');
+
+    Route::get('/filmes/create', [FilmesController::class, 'create'])->name('filmes.create');
+
+
+    Route::post('/diretores', [DiretoresController::class, 'store'])->name('diretores.store');
+
 
     Route::get('verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
                 ->middleware(['signed', 'throttle:6,1'])

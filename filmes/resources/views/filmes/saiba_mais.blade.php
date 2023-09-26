@@ -22,33 +22,30 @@
         @if ($filme->comentarios->isEmpty())
             <p>Seja o primeiro a comentar!</p>
         @else
-        <?php $lado = 'esquerda'; ?>
+            <?php $lado = 'esquerda'; ?>
             <div class="comentarios-container">
-                @foreach ($filme->comentarios->groupBy('usuario_id') as $grupoComentarios)
-                    @foreach ($grupoComentarios as $comentario)
-                        <div class="comentario {{ $lado }}">
-                            <div class="comentario-content">
-                                <p class="comentario-text">
-                                    <strong>{{ $comentario->usuario->name }}:</strong>
-                                    <span class="text-{{ ($lado === 'esquerda') ? 'right' : 'left' }}"> <!-- Adicione um estilo inline para alinhar o texto à direita -->
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            @if ($i <= $comentario->avaliacao)
-                                                <span class="starC active">&#9733;</span>
-                                            @else
-                                                <span class="starC ">&#9733;</span>
-                                            @endif
-                                        @endfor
-                                    </span>
-                                    {{ $comentario->comentario }}
-                                </p>
-                            </div>
+                @foreach ($filme->comentarios->sortByDesc('created_at') as $comentario)
+                    <div class="comentario {{ $lado }}">
+                        <div class="comentario-content">
+                            <p class="comentario-text">
+                                <strong>{{ $comentario->usuario->name }}:</strong>
+                                <span class="text-{{ ($lado === 'esquerda') ? 'right' : 'left' }}"> <!-- Adicione um estilo inline para alinhar o texto à direita -->
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= $comentario->avaliacao)
+                                            <span class="starC active">&#9733;</span>
+                                        @else
+                                            <span class="starC ">&#9733;</span>
+                                        @endif
+                                    @endfor
+                                </span>
+                                {{ $comentario->comentario }}
+                            </p>
                         </div>
-                    @endforeach
-
+                    </div>
                     <?php $lado = ($lado === 'esquerda') ? 'direita' : 'esquerda'; ?>
                 @endforeach
             </div>
-        @endif
+         @endif
 
 
         <form action="{{ route('filmes.comentar', $filme->id) }}" method="POST" class="comentar-form">

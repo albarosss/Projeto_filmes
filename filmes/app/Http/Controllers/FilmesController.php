@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\FilmesFormRequest;
 use App\Models\Filmes;
+use App\Models\Atores;
+use App\Models\Diretores;
 use App\Models\Comentarios;
 use App\Repositories\FilmesRepository;
 use Illuminate\Http\Request;
@@ -66,7 +68,11 @@ class FilmesController extends Controller
 
     public function create()
     {
-        return view('filmes.create');
+        $mensagemSucesso = session('mensagem.sucesso');
+        $atores = Atores::orderBy('nome')->get();
+        $diretores = Diretores::orderBy('nome')->get();
+
+        return view('filmes.create', compact('atores', 'diretores', 'mensagemSucesso'));
     }
 
     public function store(FilmesFormRequest $request)
