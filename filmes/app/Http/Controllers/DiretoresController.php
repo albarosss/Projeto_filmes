@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Diretores;
-use Illuminate\Http\Request;
 use App\Repositories\DiretoresRepository;
 use App\Http\Requests\DiretoresFormRequest;
 
@@ -17,7 +16,7 @@ class DiretoresController
     public function store(DiretoresFormRequest $request)
     {
         $diretor = new Diretores();
-        $diretor->nome = $request->input('nome diretor');
+        $diretor->nome = $request->input('nome_diretor');
         $diretor->save();
 
         return to_route('filmes.create')

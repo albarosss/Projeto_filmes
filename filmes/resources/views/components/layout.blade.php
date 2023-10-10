@@ -12,11 +12,14 @@
     <link rel="stylesheet" href="{{ asset('css/components/saiba_mais/saibamais.css') }}">
     <link rel="stylesheet" href="{{ asset('css/components/initial_page/index.css') }}">
     <link rel="stylesheet" href="{{ asset('css/components/edit_user/index.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/search/index.css') }}">
     <link rel="stylesheet" href="{{ asset('css/components/cad_filmes_atores_diretores/index.css') }}">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
 
 </head>
 <body>
@@ -24,9 +27,36 @@
         <div class="container-fluid">
             <a href="{{ route('filmes.index') }}">
                 <div class="div_bola bg-white"
-                    style="background-image: url({{ asset('logos/logo.png') }});">
+                    {{-- style="background-image: url({{ asset('logos/logo.png') }});"> --}}
+                    style="background-image: url({{ asset('logos/logo3.jpeg') }});">
                 </div>
             </a>
+
+            <div class="search-container">
+                <input type="text" class="search-input" id="search-input" placeholder="Pesquisar filmes...">
+            </div>
+            <div class="dropdown-filme">
+
+                <div class="dropdown-content" id="filme-dropdown">
+                    <!-- Os filmes serão listados aqui -->
+                </div>
+            </div>
+
+
+            <a href="" class="btn btn-secondary">Aleatório</a>
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="categoriaDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Categoria
+                </button>
+                <div class="dropdown-menu" aria-labelledby="categoriaDropdown">
+                    <a class="dropdown-item categoria-btn" data-genero="acao">Ação</a>
+                    <a class="dropdown-item categoria-btn" data-genero="comedia">Comédia</a>
+                    <a class="dropdown-item categoria-btn" data-genero="terror">Terror</a>
+                    <a class="dropdown-item categoria-btn" data-genero="romance">Romane</a>
+                    <a class="dropdown-item categoria-btn" data-genero="todos">Todos</a>
+                </div>
+            </div>
+
 
             @auth
             <div class="dropdown">
@@ -56,29 +86,32 @@
             @endguest
         </div>
     </nav>
-<div class="container">
-    <div class="w-100">
-        <!-- Seu conteúdo aqui -->
-        {{-- <h1>{{ $title }}</h1> --}}
+    <div class="container">
+        <div class="w-100">
+            <!-- Seu conteúdo aqui -->
+            {{-- <h1>{{ $title }}</h1> --}}
 
-        @isset($mensagemSucesso)
-            <div class="alert alert-success">
-                {{ $mensagemSucesso }}
-            </div>
-        @endisset
+            @isset($mensagemSucesso)
+                <div class="alert alert-success">
+                    {{ $mensagemSucesso }}
+                </div>
+            @endisset
 
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-        {{ $slot }}
+            {{ $slot }}
+        </div>
     </div>
-</div>
+
+
 </body>
 </html>
+<script src="{{ asset('js/pesquisa/index.js') }}"></script>

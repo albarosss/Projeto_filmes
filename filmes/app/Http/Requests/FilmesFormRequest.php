@@ -26,11 +26,12 @@ class FilmesFormRequest extends FormRequest
         return [
             'nome' => ['required', 'min:2'],
             'descricao' => ['required', 'min:20'],
-            'categoria' =>['required'],
+            'categoria' => ['required'],
             'resumo' => ['required', 'min:20'],
-            'urlimg' =>['required'],
-            'fk_ator_principal' =>['required'],
-            'fk_diretor' =>['required']
+            'urlimg' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // Adicione regras para a imagem
+            'fk_ator_principal' => ['required'],
+            'fk_diretor' => ['required'],
         ];
     }
+
 }

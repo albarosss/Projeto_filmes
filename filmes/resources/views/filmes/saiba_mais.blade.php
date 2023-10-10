@@ -1,14 +1,21 @@
 <x-layout title="Informações do filme">
+    @auth
+    @if ($isAdmin)
+      <a href="{{ route('filmes.edit', $filme) }}" class="adc_filmes btn btn-dark mb-2">Editar</a>
+    @endif
+    @endauth
     <h3 class="titulo">Informações do filme!</h3>
     <div class="card_v">
         {{-- <img src="{{ asset('filmes_capa/capa_padrao.avif') }}" alt="Card Image"> --}}
-        <img src="{{ asset('filmes_capa/flash.png') }}" alt="Card Image">
+        <img src="{{ asset('storage/' . ($filme->urlimg ?? 'filmes_capa/capa_padrao.avif')) }}" alt="Card Image" >
         <div class="card_v-body">
             <div class="infos_filme">
                 <p><strong>Título:</strong> {{ $filme->nome }}</p>
                 <p style=" overflow-wrap: break-word;
                 word-wrap: break-word; /;"><strong>Descrição:</strong> {{ $filme->descricao }}</p>
                 <p><strong>Categoria:</strong> {{ $filme->categoria }}</p>
+                <p><strong>Ator principal:</strong> {{ $filme->atorPrincipal->nome }}</p>
+                <p><strong>Diretor:</strong> {{ $filme->diretorPrincipal->nome }}</p>
             </div>
         </div>
     </div>

@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\FilmesController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\DiretoresController;
+use App\Http\Controllers\AtoresController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -38,6 +39,8 @@ Route::middleware('guest')->group(function () {
                 ->name('password.update');
 });
 
+
+
 Route::get('/', function () {
     return redirect('/filmes');
 });
@@ -47,15 +50,25 @@ Route::resource('/filmes', FilmesController::class)
 Route::get('/filmes/{filmes}/filmes', [FilmesController::class, 'saibaMais'])
 ->name('filmes.saiba_mais');
 
+Route::get('/filmes/search', [FilmesController::class, 'search'])
+->name('filmes.search');
+
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/filmes/create', [FilmesController::class, 'create'])->name('filmes.create');
+    Route::get('/filmes/{filme}/editar',[FilmesController::class, 'edit'])->name('filmes.edit');
+
+
+    Route::post('/diretores', [DiretoresController::class, 'store'])->name('diretores.store');
+
+    Route::post('/atores', [AtoresController::class, 'store'])->name('atores.store');
+});
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('verify-email', [EmailVerificationPromptController::class, '__invoke'])
                 ->name('verification.notice');
-
-    Route::get('/filmes/create', [FilmesController::class, 'create'])->name('filmes.create');
-
-
-    Route::post('/diretores', [DiretoresController::class, 'store'])->name('diretores.store');
 
 
     Route::get('verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
@@ -81,3 +94,6 @@ Route::middleware('auth')->group(function () {
     Route::put('/users/atualizar', [PerfilController::class, 'atualizar'])->name('users.atualizar');
 
 });
+
+
+Route::get('/filmes/search', [FilmesController::class, 'search'])->name('filmes.search');

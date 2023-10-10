@@ -2,7 +2,7 @@
     <div class="container_formularios">
         <div class="form_filme">
             <h3>Cadastro Filme:</h3>
-            <form action="{{ route('filmes.store') }}" method="post">
+            <form action="{{ route('filmes.store') }}" method="post" enctype="multipart/form-data">
                 @csrf
 
                 <div class="row mb-3">
@@ -67,7 +67,7 @@
                 <div class="row mb-3">
                     <div class="col-12">
                         <label for="ator" class="form-label">Ator:</label>
-                        <select id="ator" name="ator" class="form-control">
+                        <select id="ator" name="fk_ator_principal" class="form-control">
                             @foreach($atores as $ator)
                                 <option value="{{ $ator->id }}">{{ $ator->nome }}</option>
                             @endforeach
@@ -78,7 +78,7 @@
                 <div class="row mb-3">
                     <div class="col-12">
                         <label for="diretor" class="form-label">Diretor:</label>
-                        <select id="diretor" name="diretor" class="form-control">
+                        <select id="diretor" name="fk_diretor" class="form-control">
                             @foreach($diretores as $diretor)
                                 <option value="{{ $diretor->id }}">{{ $diretor->nome }}</option>
                             @endforeach
@@ -93,23 +93,23 @@
         <div class="form_ator">
             <h3>Cadastro Ator:</h3>
 
-            <form action="" method="post" style="width: 60%">
+            <form action="{{ route('atores.store') }}" method="post" style="width: 60%">
                 @csrf
                 <div class="row mb-3">
                     <div class="col-12">
-                        <label for="novoAtorNome" class="form-label">Nome:</label>
-                        <input type="text" id="novoAtorNome" name="novoAtorNome" class="form-control">
+                        <label for="atornome" class="form-label">Nome:</label>
+                        <input type="text" id="atornome" name="nome_ator" class="form-control">
                     </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-12">
-                        <label for="novoAtorIdade" class="form-label">Idade:</label>
-                        <input type="number" id="novoAtorIdade" name="novoAtorIdade" class="form-control">
+                        <label for="idade" class="form-label">Idade:</label>
+                        <input type="number" id="idade" name="idade" class="form-control">
                     </div>
                 </div>
                 <div class="row mb-1">
                     <div class="col-12">
-                        <button type="button" class="btn btn-primary" id="adicionarAtor">Adicionar</button>
+                        <button type="submit" class="btn btn-primary" id="adicionarAtor">Adicionar</button>
                     </div>
                 </div>
 
@@ -124,7 +124,7 @@
                 <div class="row mb-3">
                     <div class="col-12">
                         <label for="nomeA" class="form-label">Nome:</label>
-                        <input type="text" id="nomeA" name="nome diretor" class="form-control">
+                        <input type="text" id="nome_diretor" name="nome_diretor" class="form-control">
                     </div>
                 </div>
 
@@ -138,6 +138,6 @@
         </div>
     </div>
 
-    {{-- <script src="{{ asset('js/cadastro/cadastro_filmes.js') }}"></script> --}}
+
 
 </x-layout>

@@ -7,6 +7,7 @@ use App\Models\Filmes;
 use App\Models\Atores;
 use App\Models\Diretores;
 use App\Models\Comentarios;
+use Illuminate\Support\Str;
 use App\Repositories\FilmesRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -62,8 +63,12 @@ class FilmesController extends Controller
             'isAdmin' => $isAdmin,
         ])->with('filmes', $filmes)
         ->with('mensagemSucesso', $mensagemSucesso);
+    }
 
-
+    public function search()
+    {
+        $filmes = Filmes::all()->sortBy('nome');
+        return response()->json($filmes);
     }
 
     public function create()
@@ -77,6 +82,22 @@ class FilmesController extends Controller
 
     public function store(FilmesFormRequest $request)
     {
+        if ($request->hasFile('urlimg'))
+        {
+
+            $imagem = $request->file('urlimg');
+            $nomeOriginal = $imagem->getClientOriginalName();
+            $nomeSeguro = Str::slug(pathinfo($nomeOriginal, PATHINFO_FILENAME)) . '.' . $imagem->getClientOriginalExtension();
+            $caminhoImagem = $imagem->storeAs('filmes_capa', $nomeSeguro, 'public');
+
+
+            $filme = $this->repository->add($request);
+            $filme->urlimg = $caminhoImagem; // Salva o caminho da imagem
+            $filme->save();
+
+            return redirect()->route('filmes.index')
+                ->with('mensagem.sucesso', "Filme '{$filme->nome}' adicionado com sucesso");
+        }
         $filme = $this->repository->add($request);
 
         return to_route('filmes.index')
@@ -91,33 +112,70 @@ class FilmesController extends Controller
             ->with('mensagem.sucesso', "Filme '{$filmes->nome}' removidao com sucesso");
     }
 
-    public function edit(Filmes $filmes)
+    public function edit($id)
     {
-        return view('filmes.edit')->with('filme', $filmes);
+        $filme = Filmes::find($id);
+        $atores = Atores::all();
+        $diretores = Diretores::all();
+
+        return view('filmes.edit', compact('filme', 'atores', 'diretores'));
     }
+
+
 
     public function saibaMais($filmeId)
     {
         $filme = Filmes::find($filmeId);
 
-        if (!$filme) {
+        if (!$filme)
+        {
             return redirect()->route('filmes.index')->with('error', 'Filme não encontrado.');
         }
 
         // Carregar os comentários associados a este filme.
         $comentarios = $filme->comentarios;
+        $user = auth()->user();
+        $isAdmin = $user && $user->admin == 1;
 
-        return view('filmes.saiba_mais', ['filme' => $filme, 'comentarios' => $comentarios]);
+        return view('filmes.saiba_mais', ['filme' => $filme, 'comentarios' => $comentarios, 'isAdmin' => $isAdmin]);
     }
 
-
-
-    public function update(Filmes $filmes, FilmesFormRequest $request)
+    public function update(Request $request, $filmeId)
     {
-        $filmes->fill($request->all());
-        $filmes->save();
+        // Encontre o filme que você deseja atualizar com base no $filmeId
+        $filme = Filmes::find($filmeId);
 
-        return to_route('filmes.index')
-            ->with('mensagem.sucesso', "Série '{$filmes->nome}' atualizado com sucesso");
+        // Verifique se o filme foi encontrado
+        if (!$filme) {
+            return redirect()->route('filmes.index')->with('error', 'Filme não encontrado.');
+        }
+
+        // Atualize os campos do filme com base nos dados do formulário
+        $filme->nome = $request->input('nome');
+        $filme->descricao = $request->input('descricao');
+        $filme->categoria = $request->input('categoria');
+        $filme->resumo = $request->input('resumo');
+        $filme->fk_ator_principal = $request->input('fk_ator_principal');
+        $filme->fk_diretor = $request->input('fk_diretor');
+
+        // Verifique se uma nova imagem foi enviada no formulário
+        if ($request->hasFile('urlimg')) {
+            $imagem = $request->file('urlimg');
+            $nomeOriginal = $imagem->getClientOriginalName();
+            $nomeSeguro = Str::slug(pathinfo($nomeOriginal, PATHINFO_FILENAME)) . '.' . $imagem->getClientOriginalExtension();
+            $caminhoImagem = $imagem->storeAs('filmes_capa', $nomeSeguro, 'public');
+            $filme->urlimg = $caminhoImagem; // Atualize o campo da imagem com o novo caminho
+        }
+
+        // Salve as alterações no banco de dados
+        $filme->save();
+
+        $mensagemSucesso = 'Filme atualizado com sucesso'; // Defina a mensagem de sucesso aqui
+        $atores = Atores::all();
+        $diretores = Diretores::all();
+
+        return view('filmes.edit', compact('filme', 'atores', 'diretores', 'mensagemSucesso'));
+
     }
+
 }

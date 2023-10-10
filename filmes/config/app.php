@@ -179,6 +179,7 @@ return [
 
         \App\Providers\FilmesRepositoryProvider::class,
         \App\Providers\DiretoresRepositoryProvider::class,
+        \App\Providers\AtoresRepositoryProvider::class,
     ],
 
     /*

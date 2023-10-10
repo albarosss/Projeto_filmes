@@ -1,0 +1,96 @@
+.search-container {
+    display: flex;
+    align-items: center;
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para a caixa de entrada de texto */
+.search-input {
+    flex: 1;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    outline: none;
+}
+
+/* Estilos para o botão de pesquisa */
+.search-button {
+    background-color: #5b6065;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 0 25px 25px 0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Estilos para o botão de pesquisa ao passar o mouse */
+.search-button:hover {
+    background-color: #546475;
+}
+
+
+/* Estilos para o dropdown de filmes */
+.dropdown-filme
+{
+    position: absolute;
+    top: 80%;
+    right: 44.8%;
+}
+/* Estilos do dropdown de filmes */
+#filme-dropdown {
+    display: none;
+    position: absolute;
+    background-color: #fff; /* Cor de fundo do dropdown */
+    min-width: 200px; /* Largura do dropdown ajustável */
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    right: 0; /* Ajuste a posição do dropdown se necessário */
+    border-radius: 5px; /* Bordas arredondadas */
+    border: 1px solid #ccc; /* Borda sólida */
+    font-family: Arial, sans-serif; /* Fonte do texto */
+    overflow-y: auto; /* Adiciona uma barra de rolagem se muitos itens estiverem presentes */
+}
+
+/* Estilo dos itens do dropdown de filmes */
+#filme-dropdown a {
+    padding: 10px 20px;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+    color: #333;
+    transition: background-color 0.2s; /* Transição suave da cor de fundo */
+}
+
+/* Estilo dos itens do dropdown de filmes quando o mouse está sobre eles */
+#filme-dropdown a:hover,
+#filme-dropdown a:focus {
+    background-color: #f0f0f0; /* Cor de fundo quando o mouse está sobre o item */
+    color: #000; /* Cor do texto quando o mouse está sobre o item */
+}
+
+
+/* Estilo da barra de rolagem no dropdown (caso necessário) */
+#filme-dropdown::-webkit-scrollbar {
+    width: 8px; /* Largura da barra de rolagem */
+}
+
+#filme-dropdown::-webkit-scrollbar-thumb {
+    background-color: #888; /* Cor do polegar da barra de rolagem */
+    border-radius: 4px; /* Bordas arredondadas do polegar */
+}
+
+#filme-dropdown::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Cor do polegar da barra de rolagem quando o mouse está sobre ele */
+}
+
+/* Exemplo de estilo para os elementos .filme */
+.filmeC {
+    float: left; /* Para alinhar os filmes em uma linha */
+}

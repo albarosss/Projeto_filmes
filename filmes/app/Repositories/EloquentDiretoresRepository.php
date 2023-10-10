@@ -11,8 +11,8 @@ class EloquentDiretoresRepository implements DiretoresRepository
     public function add(DiretoresFormRequest $request): Diretores
     {
         return DB::transaction(function () use ($request) {
-            $filme = Diretores::create($request->all());
-            return $filme;
+            $diretor = Diretores::create($request->all());
+            return $diretor;
         });
     }
 }
