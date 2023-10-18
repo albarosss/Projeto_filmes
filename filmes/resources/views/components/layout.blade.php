@@ -19,10 +19,32 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 
 </head>
 <body>
+    {{-- <div class="mermaid">
+        sequenceDiagram
+        participant User
+        participant "Página Inicial" as App
+        User->>List: Acessar Página Inicial
+        activate App
+        User->>List: Clicar em Filme
+        More->>User: Exibir Detalhes do Filme
+        User->>More: Tentativa de Comentário
+        alt Usuário Não Logado
+            Comment->>User: Obrigar Login
+            User->>Login: Redirecionamento para a Página de Login
+            User->>Login: Login do Usuário
+            App->>More: Redirecionamento de Volta à Página do Filme
+            User->>Comment: Envio de Comentário Após o Login
+        else Usuário Logado
+            User->>Comment: Envio de Comentário
+            App->>More: Comentário Publicado
+        end
+        deactivate App
+
+    </div> --}}
     <nav class="navbar navbar-expand-lg navbar-light bg-dark">
         <div class="container-fluid">
             <a href="{{ route('filmes.index') }}">
@@ -42,18 +64,19 @@
                 </div>
             </div>
 
-
-            <a href="" class="btn btn-secondary">Aleatório</a>
-            <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="categoriaDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Categoria
-                </button>
-                <div class="dropdown-menu" aria-labelledby="categoriaDropdown">
-                    <a class="dropdown-item categoria-btn" data-genero="acao">Ação</a>
-                    <a class="dropdown-item categoria-btn" data-genero="comedia">Comédia</a>
-                    <a class="dropdown-item categoria-btn" data-genero="terror">Terror</a>
-                    <a class="dropdown-item categoria-btn" data-genero="romance">Romane</a>
-                    <a class="dropdown-item categoria-btn" data-genero="todos">Todos</a>
+            <div class="botoesLayout">
+                <a href="" class="btn btn-secondary p-2">Aleatório</a>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle p-2" type="button" id="categoriaDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Categoria
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="categoriaDropdown">
+                        <a class="dropdown-item categoria-btn" data-genero="acao" href="{{ route('filmes.index', ['genero' => 'acao']) }}">Ação</a>
+                        <a class="dropdown-item categoria-btn" data-genero="comedia" href="{{ route('filmes.index', ['genero' => 'comedia']) }}">Comédia</a>
+                        <a class="dropdown-item categoria-btn" data-genero="terror" href="{{ route('filmes.index', ['genero' => 'terror']) }}">Terror</a>
+                        <a class="dropdown-item categoria-btn" data-genero="romance" href="{{ route('filmes.index', ['genero' => 'romance']) }}">Romane</a>
+                        <a class="dropdown-item categoria-btn" data-genero="todos" href="{{ route('filmes.index') }}">Todos</a>
+                    </div>
                 </div>
             </div>
 
@@ -86,7 +109,7 @@
             @endguest
         </div>
     </nav>
-    <div class="container">
+    <div class="container" style="overflow:hidden;">
         <div class="w-100">
             <!-- Seu conteúdo aqui -->
             {{-- <h1>{{ $title }}</h1> --}}

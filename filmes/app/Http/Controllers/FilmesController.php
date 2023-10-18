@@ -17,7 +17,7 @@ class FilmesController extends Controller
 {
     public function __construct(private FilmesRepository $repository)
     {
-        $this->middleware('auth')->except('index', 'saibaMais');
+        $this->middleware('auth')->except('index', 'saibaMais', 'search', 'genero');
     }
 
     public function comentar(Request $request, Filmes $filmes)
@@ -48,13 +48,13 @@ class FilmesController extends Controller
         $filmes = Filmes::all();
         $mensagemSucesso = session('mensagem.sucesso');
 
-        $bestRatedFilmes = $bestRatedFilmes = DB::table('filmes')
+        $bestRatedFilmes = DB::table('filmes')
         ->join('comentarios', 'filmes.id', '=', 'comentarios.filme_id')
-        ->select('filmes.id', 'filmes.nome', 'filmes.resumo', DB::raw('ROUND(AVG(comentarios.avaliacao), 2) as media_avaliacao'))
-        ->groupBy('filmes.id', 'filmes.nome', 'filmes.resumo')
+        ->select('filmes.id', 'filmes.nome', 'filmes.resumo', 'filmes.urlimg', DB::raw('ROUND(AVG(comentarios.avaliacao), 2) as media_avaliacao'))
+        ->groupBy('filmes.id', 'filmes.nome', 'filmes.resumo', 'filmes.urlimg')
         ->havingRaw('AVG(comentarios.avaliacao) > 4')
         ->orderByDesc('media_avaliacao')
-        ->paginate(3); // Defina o número de filmes por página (3 no seu caso)
+        ->paginate(3);
 
         return view('filmes.index', [
             'filmes' => $filmes,
@@ -70,6 +70,28 @@ class FilmesController extends Controller
         $filmes = Filmes::all()->sortBy('nome');
         return response()->json($filmes);
     }
+    public function genero($genero)
+    {
+        if ($genero !== 'todos') {
+            $filmes = Filmes::leftJoin('comentarios', 'filmes.id', '=', 'comentarios.filme_id')
+                ->select('filmes.id', 'filmes.nome', 'filmes.resumo', 'filmes.urlimg', DB::raw('COALESCE(ROUND(AVG(comentarios.avaliacao), 2), "Não Avaliado!") as media_avaliacao'))
+                ->where('categoria', $genero)
+                ->groupBy('filmes.id', 'filmes.nome', 'filmes.resumo', 'filmes.urlimg')
+                ->orderBy('nome', 'asc')
+                ->get();
+
+            return response()->json($filmes);
+        } else {
+            $filmes = Filmes::leftJoin('comentarios', 'filmes.id', '=', 'comentarios.filme_id')
+                ->select('filmes.id', 'filmes.nome', 'filmes.resumo', 'filmes.urlimg', DB::raw('COALESCE(ROUND(AVG(comentarios.avaliacao), 2), "Não Avaliado!") as media_avaliacao'))
+                ->groupBy('filmes.id', 'filmes.nome', 'filmes.resumo', 'filmes.urlimg')
+                ->orderBy('nome', 'asc')
+                ->get();
+
+            return response()->json($filmes);
+        }
+    }
+
 
     public function create()
     {

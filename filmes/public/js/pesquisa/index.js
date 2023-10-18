@@ -29,50 +29,98 @@ categoriaDropdownButton.addEventListener("click", function () {
 
 document.addEventListener("DOMContentLoaded", function ()
 {
+    // mermaid.initialize({ startOnLoad: true });
     const categoriaButtons = document.querySelectorAll('.categoria-btn');
-    const filmesContainer = document.querySelector('.list-group.flex-row');
-    const noFilmsMessage = document.getElementById('no-films-message'); // Elemento da mensagem
-    const filmesOriginais = filmesContainer.innerHTML; // Armazene a lista original de filmes
+    const cardsContainer = document.querySelector('.cards-container');
+    const semFilmesG = document.getElementById('no-films-message');
+    categoriaButtons.forEach(async function (button) {
+        button.addEventListener("click", async function (e) {
+            e.preventDefault(); // Impede o comportamento padrão do link
 
-    categoriaButtons.forEach(function (button) {
-        button.addEventListener("click", function () {
-            filmesContainer.innerHTML = filmesOriginais;
-            const generoSelecionado = button.getAttribute('data-genero');
-            const filmesC = document.querySelectorAll('.filmeC');
-
-            filmesContainer.innerHTML = ''; // Limpa o conteúdo atual
-
-            let filmesExibidos = false; // Variável para controlar se filmes foram exibidos
-
-            filmesC.forEach(function (filme) {
-                const generoDoFilme = filme.getAttribute('data-genero');
-
-                if (generoSelecionado === generoDoFilme || generoSelecionado === "todos") {
-                    const li = document.createElement('li');
-                    li.classList.add('d-flex', 'align-items-center');
-                    li.style.margin = '10px';
-                    li.style.padding = '5px';
-                    li.style.width = 'fit-content';
-                    li.style.height = 'fit-content';
-                    li.appendChild(filme);
-                    filmesContainer.appendChild(li);
-                    filmesExibidos = true; // Filmes foram exibidos
+            var genero = $(this).data("genero");
+            await fetch(`http://127.0.0.1:8000/filmes/genero/${genero}`)
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error('Erro na requisição: ' + response.status);
                 }
+                return response.json(); // Isso irá ler e processar o corpo JSON
+            })
+            .then(function (data) {
+                // Limpando o conteúdo atual
+                cardsContainer.innerHTML = '';
+                data.length == 0 ? semFilmesG.style.display = 'block' : semFilmesG.style.display = 'none';
+
+                var currentUl; // Variável para acompanhar a lista <ul> atual
+
+                // Iterando pelos novos dados e atualizando o DOM
+                data.forEach(function (filme, index) {
+                    // Criar um item da lista <li>
+                    var cardListItem = document.createElement('li');
+                    cardListItem.className = 'd-flex align-items-center';
+                    cardListItem.style.margin = '10px';
+                    cardListItem.style.padding = '5px';
+                    cardListItem.style.height = 'fit-content';
+
+                    var card = document.createElement('div');
+                    card.className = 'card';
+                    console.log(filme.urlimg);
+                    var img = document.createElement('img');
+                    img.src = filme.urlimg ? 'storage/' + filme.urlimg : 'storage/' + 'filmes_capa/capa_padrao.avif';
+                    img.alt = 'Card Image';
+                    img.style.width = '100%';
+
+                    var cardContent = document.createElement('div');
+                    cardContent.className = 'card-content';
+
+                    var cardTitle = document.createElement('h3');
+                    cardTitle.className = 'card-title';
+                    cardTitle.textContent = filme.nome;
+
+                    var cardDescription = document.createElement('p');
+                    cardDescription.className = 'card-description';
+                    cardDescription.textContent = filme.resumo;
+
+                    var cardAvaliacao = document.createElement('b');
+                    var cardAvaliacaoText = document.createElement('p');
+                    cardAvaliacao.className = 'card-avaliacao';
+                    cardAvaliacaoText.textContent = filme.media_avaliacao === 'Não Avaliado!' ? `Avaliação: ${filme.media_avaliacao} ` : `Avaliação: ${filme.media_avaliacao} ★`;
+                    cardAvaliacao.appendChild(cardAvaliacaoText);
+
+                    var cardButton = document.createElement('a');
+                    cardButton.href = `{{ route('filmes.saiba_mais', ${filme.id}) }}`;
+                    cardButton.className = 'card-button';
+                    cardButton.textContent = 'Saiba mais';
+
+                    cardContent.appendChild(cardTitle);
+                    cardContent.appendChild(cardDescription);
+                    cardContent.appendChild(cardAvaliacao);
+                    cardContent.appendChild(cardButton);
+
+                    card.appendChild(img);
+                    card.appendChild(cardContent);
+
+                    cardListItem.appendChild(card); // Anexar o card ao item da lista
+
+                    if (index % 3 === 0) {
+                        // Se este é o primeiro filme da nova lista, crie uma nova lista <ul>
+                        currentUl = document.createElement('ul');
+                        currentUl.className = 'list-group flex-row';
+                        cardsContainer.appendChild(currentUl);
+                    }
+
+                    currentUl.appendChild(cardListItem); // Anexar o item da lista à lista <ul>
+                });
+
+                var isDropdownVisible = categoriaDropdownMenu.style.display === "block";
+                categoriaDropdownMenu.style.display = isDropdownVisible ? "none" : "block";
+            })
+            .catch(function (error) {
+                console.error(error);
             });
-
-            // Exiba a mensagem "Não há filmes" quando nenhum filme for exibido
-            if (!filmesExibidos) {
-                noFilmsMessage.style.display = 'block';
-            } else {
-                noFilmsMessage.style.display = 'none';
-            }
-
-            if (generoSelecionado === "todos") {
-                filmesContainer.innerHTML = filmesOriginais;
-                noFilmsMessage.style.display = 'none'; // Oculta a mensagem quando "todos" é selecionado
-            }
         });
     });
+
+
 
 
 

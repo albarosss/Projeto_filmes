@@ -15,7 +15,18 @@ use App\Http\Controllers\AtoresController;
 use Illuminate\Support\Facades\Route;
 
 
+
+Route::get('/', function () {
+    return redirect('/filmes');
+});
+Route::get('/filmes/search', [FilmesController::class, 'search']);
+
+
+Route::get('filmes/genero/{genero}', [FilmesController::class, 'genero']);
+
+
 Route::middleware('guest')->group(function () {
+
     Route::get('register', [RegisteredUserController::class, 'create'])
                 ->name('register');
 
@@ -39,19 +50,11 @@ Route::middleware('guest')->group(function () {
                 ->name('password.update');
 });
 
-
-
-Route::get('/', function () {
-    return redirect('/filmes');
-});
 Route::resource('/filmes', FilmesController::class)
     ->except(['show']);
 
 Route::get('/filmes/{filmes}/filmes', [FilmesController::class, 'saibaMais'])
 ->name('filmes.saiba_mais');
-
-Route::get('/filmes/search', [FilmesController::class, 'search'])
-->name('filmes.search');
 
 
 Route::middleware(['auth', 'admin'])->group(function () {

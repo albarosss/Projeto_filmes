@@ -1,55 +1,55 @@
 <x-layout title="Filmes" :mensagem-sucesso="$mensagemSucesso">
 
-    <div class="cards-container">
-        @auth
-        @if ($isAdmin)
-            <a href="{{ route('filmes.create') }}" class="adc_filmes btn btn-dark mb-2">Adicionar</a>
-        @endif
-        @endauth
+    @auth
+    @if ($isAdmin)
+        <a href="{{ route('filmes.create') }}" class="adc_filmes btn btn-dark mb-2">Adicionar</a>
+    @endif
+    @endauth
 
-        <!-- Seção para os filmes com melhores avaliações -->
-        <div class="best-rated">
-            @if ($bestRatedFilmes->isNotEmpty())
-                <h3>Filmes melhores Avaliados!</h3>
-                <div class="pagination-container"> <!-- Adicione a classe pagination-container aqui -->
-                    @if ($bestRatedFilmes->currentPage() > 1)
-                        <button class="pagination-button prev" onclick="pageAnt()">
-                            <
-                        </button>
-                    @endif
+    <!-- Seção para os filmes com melhores avaliações -->
+    <div class="best-rated">
+        @if ($bestRatedFilmes->isNotEmpty())
+            <h3>Filmes melhores avaliados de todos os generos!</h3>
+            <div class="pagination-container">
+                @if ($bestRatedFilmes->currentPage() > 1)
+                    <button class="pagination-button prev" onclick="pageAnt()">
+                        <
+                    </button>
+                @endif
 
-                    <ul class="list-group">
-                        <li class="list-group-item d-flex" style="justify-content: space-evenly; min-width: 1225px;">
-                            @foreach ($bestRatedFilmes as $filme)
-                                <div class="card">
-                                    <img src="{{ asset('storage/' . ($filme->urlimg ?? 'filmes_capa/capa_padrao.avif')) }}" alt="Card Image" style="width:100%">
-                                    <div class="card-content">
-                                        <h3 class="card-title">{{ $filme->nome }}</h3>
-                                        <p class="card-description">{{ $filme->resumo }}</p>
-                                        <b><p class="card-avaliacao">Avaliação: {{ $filme->media_avaliacao }}&#9733;</p></b>
-                                        <a href="{{ route('filmes.saiba_mais', $filme->id) }}" class="card-button">Saiba mais</a>
-                                    </div>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex" style="justify-content: space-evenly; min-width: 1225px;">
+                        @foreach ($bestRatedFilmes as $filme)
+                            <div class="card">
+                                <img src="{{ asset('storage/' . ($filme->urlimg ?? 'filmes_capa/capa_padrao.avif')) }}" alt="Card Image" style="width:100%">
+                                <div class="card-content">
+                                    <h3 class="card-title">{{ $filme->nome }}</h3>
+                                    <p class="card-description">{{ $filme->resumo }}</p>
+                                    <b><p class="card-avaliacao">Avaliação: {{ $filme->media_avaliacao }}&#9733;</p></b>
+                                    <a href="{{ route('filmes.saiba_mais', $filme->id) }}" class="card-button">Saiba mais</a>
                                 </div>
-                            @endforeach
-                        </li>
-                    </ul>
+                            </div>
+                        @endforeach
+                    </li>
+                </ul>
 
-                    @if ($bestRatedFilmes->hasMorePages())
-                        <button class="pagination-button next" onclick="nextPage()">
-                            >
-                        </button>
-                    @endif
-                </div>
+                @if ($bestRatedFilmes->hasMorePages())
+                    <button class="pagination-button next" onclick="nextPage()">
+                        >
+                    </button>
+                @endif
+            </div>
 
-                {{ $bestRatedFilmes->links('pagination.custom') }}
-            @endif
-        </div>
+            {{ $bestRatedFilmes->links('pagination.custom') }}
+        @endif
+    </div>
 
 
-        @php $count = 0 @endphp
-        <div class="alert alert-warning" id="no-films-message" style="display: none;">
-            Não há filmes nesta categoria.
-        </div>
+    @php $count = 0 @endphp
+    <div class="alert alert-warning m-5" id="no-films-message" style="display: none;">
+        Não há filmes nesta categoria.
+    </div>
+    <div class="cards-container">
         @foreach ($filmes as $filme)
             @if ($count % 3 === 0)
                 @if ($count > 0)
