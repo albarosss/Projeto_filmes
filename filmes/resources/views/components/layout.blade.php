@@ -65,7 +65,7 @@
             </div>
 
             <div class="botoesLayout">
-                <a href="" class="btn btn-secondary p-2">Aleatório</a>
+                <button id="button-random-film" class="btn btn-secondary p-2">Aleatório</button>
                 <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle p-2" type="button" id="categoriaDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Categoria

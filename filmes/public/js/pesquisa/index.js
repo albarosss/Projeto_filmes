@@ -2,6 +2,92 @@ var filmes = '';
 
 var campo_search = document.getElementById('search-input');
 
+
+
+var genres= {};
+const apiKey = 'bf1ddac8920d395547c13e1bad46874c';
+
+// 1. Obter uma lista de filmes (por exemplo, filmes populares)
+const movieListUrl = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=pt-BR`;
+
+fetch(movieListUrl)
+  .then(response => {
+    if (response.status === 200) {
+      return response.json();
+    } else {
+      throw new Error('Falha ao obter a lista de filmes populares.');
+    }
+  })
+  .then(data => {
+    // Vamos supor que data.results é uma matriz de filmes
+    const movies = data.results;
+
+    // 2. Para cada filme, obtenha o nome do diretor, ator principal e outros detalhes
+    movies.forEach(movie => {
+      const movieId = movie.id;
+      const creditsUrl = `https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${apiKey}&language=pt-BR`;
+      const detailsUrl = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&language=pt-BR`;
+
+      fetch(creditsUrl)
+        .then(response => {
+          if (response.status === 200) {
+            return response.json();
+          } else {
+            throw new Error('Falha ao obter os créditos do filme.');
+          }
+        })
+        .then(creditsData => {
+          const cast = creditsData.cast;
+          const crew = creditsData.crew;
+
+          // Encontre o diretor (normalmente, o diretor é creditado com o departamento 'Directing')
+          const diretor = crew.find(member => member.department === 'Directing');
+          const nomeDoDiretor = diretor ? diretor.name : 'Diretor desconhecido';
+
+          // Encontre o ator principal (normalmente, o ator principal é o primeiro da lista de elenco)
+          const atorPrincipal = cast.length > 0 ? cast[0].name : 'Ator principal desconhecido';
+
+          fetch(detailsUrl)
+            .then(response => {
+              if (response.status === 200) {
+                return response.json();
+              } else {
+                throw new Error('Falha ao obter os detalhes do filme.');
+              }
+            })
+            .then(movieDetails => {
+              const descricao = movieDetails.overview;
+              const categorias = movieDetails.genres.map(genre => genre.name).join(', ');
+              var categoria = categorias.split(',')
+              const imagemUrl = `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`;
+
+              console.log(`Filme: ${movie.title}`);
+              console.log(`Diretor: ${nomeDoDiretor}`);
+              console.log(`Ator Principal: ${atorPrincipal}`);
+              console.log(`Descrição: ${descricao}`);
+              console.log(`Categoria: ${categoria[0]}`);
+              console.log(`URL da imagem: ${imagemUrl}`);
+              console.log('---');
+            })
+            .catch(error => {
+              console.error(error);
+            });
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    });
+  })
+  .catch(error => {
+    console.error(error);
+  });
+
+
+
+document.getElementById('button-random-film').addEventListener('click', function() {
+    window.location.href = '/filmes/random';
+});
+
 campo_search.addEventListener("click", function () {
     fetch('http://127.0.0.1:8000/filmes/search')
      .then(function (response) {
@@ -78,7 +164,6 @@ document.addEventListener("DOMContentLoaded", function ()
 
                     var cardDescription = document.createElement('p');
                     cardDescription.className = 'card-description';
-                    cardDescription.textContent = filme.resumo;
 
                     var cardAvaliacao = document.createElement('b');
                     var cardAvaliacaoText = document.createElement('p');

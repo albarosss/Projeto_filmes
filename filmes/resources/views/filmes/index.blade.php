@@ -24,7 +24,6 @@
                                 <img src="{{ asset('storage/' . ($filme->urlimg ?? 'filmes_capa/capa_padrao.avif')) }}" alt="Card Image" style="width:100%">
                                 <div class="card-content">
                                     <h3 class="card-title">{{ $filme->nome }}</h3>
-                                    <p class="card-description">{{ $filme->resumo }}</p>
                                     <b><p class="card-avaliacao">Avaliação: {{ $filme->media_avaliacao }}&#9733;</p></b>
                                     <a href="{{ route('filmes.saiba_mais', $filme->id) }}" class="card-button">Saiba mais</a>
                                 </div>
@@ -59,10 +58,11 @@
             @endif
             <li class="d-flex align-items-center" style="margin: 10px; padding: 5px; width: fit-content; height: fit-content;">
                 <div class="card filmeC" data-genero="{{ $filme->categoria }}">
-                    <img src="{{ asset('storage/' . ($filme->urlimg ?? 'filmes_capa/capa_padrao.avif')) }}" alt="Card Image" style="width:100%">
+                    <img src="{{ $filme->urlimg }}" alt="Card Image" style="width:100%">
                     <div class="card-content">
                         <h3 class="card-title">{{ $filme->nome }}</h3>
-                        <p class="card-description">{{ $filme->resumo }}</p>
+                        <p style=" overflow-wrap: break-word;
+                        word-wrap: break-word; /;"><strong>Descrição:</strong> {{ $filme->descricao }}</p>
                         <a href="{{ route('filmes.saiba_mais', $filme->id) }}" class="card-button">Saiba mais</a>
                     </div>
                 </div>

@@ -48,16 +48,6 @@
 
                 <div class="row mb-3">
                     <div class="col-12">
-                        <label for="resumo" class="form-label">Resumo:</label>
-                        <textarea
-                            id="resumo"
-                            name="resumo"
-                            class="form-control">{{ old('resumo', $filme->resumo) }}</textarea>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-12">
                         <label for="urlimg" class="form-label">Imagem:</label>
                         <input
                             id="urlimg"

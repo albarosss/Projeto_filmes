@@ -14,16 +14,15 @@ use App\Http\Controllers\DiretoresController;
 use App\Http\Controllers\AtoresController;
 use Illuminate\Support\Facades\Route;
 
-
-
 Route::get('/', function () {
     return redirect('/filmes');
 });
+
+Route::get('/filmes/random',  [FilmesController::class, 'getRandom']);
+
 Route::get('/filmes/search', [FilmesController::class, 'search']);
 
-
 Route::get('filmes/genero/{genero}', [FilmesController::class, 'genero']);
-
 
 Route::middleware('guest')->group(function () {
 
@@ -57,14 +56,22 @@ Route::get('/filmes/{filmes}/filmes', [FilmesController::class, 'saibaMais'])
 ->name('filmes.saiba_mais');
 
 
-Route::middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['auth', 'admin'])->group(function ()
+{
+
     Route::get('/filmes/create', [FilmesController::class, 'create'])->name('filmes.create');
+
+    Route::get('/filmes/createApi', [FilmesController::class, 'apiStore'])->name('filmes.createApi');
+
     Route::get('/filmes/{filme}/editar',[FilmesController::class, 'edit'])->name('filmes.edit');
 
 
     Route::post('/diretores', [DiretoresController::class, 'store'])->name('diretores.store');
 
     Route::post('/atores', [AtoresController::class, 'store'])->name('atores.store');
+
+    Route::post('/filmes/{filmes}/comentar', [FilmesController::class, 'comentar'])
+    ->name('filmes.comentar');
 });
 
 
@@ -89,9 +96,6 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->name('logout');
-
-    Route::post('/filmes/{filmes}/comentar', [FilmesController::class, 'comentar'])
-    ->name('filmes.comentar');
 
     Route::get('/users/editar', [PerfilController::class, 'editar'])->name('editar');
     Route::put('/users/atualizar', [PerfilController::class, 'atualizar'])->name('users.atualizar');

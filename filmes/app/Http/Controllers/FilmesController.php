@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Http;
 use App\Http\Requests\FilmesFormRequest;
 use App\Models\Filmes;
 use App\Models\Atores;
@@ -17,7 +18,7 @@ class FilmesController extends Controller
 {
     public function __construct(private FilmesRepository $repository)
     {
-        $this->middleware('auth')->except('index', 'saibaMais', 'search', 'genero');
+        $this->middleware('auth')->except('index', 'saibaMais', 'search', 'genero', 'getRandom');
     }
 
     public function comentar(Request $request, Filmes $filmes)
@@ -50,8 +51,8 @@ class FilmesController extends Controller
 
         $bestRatedFilmes = DB::table('filmes')
         ->join('comentarios', 'filmes.id', '=', 'comentarios.filme_id')
-        ->select('filmes.id', 'filmes.nome', 'filmes.resumo', 'filmes.urlimg', DB::raw('ROUND(AVG(comentarios.avaliacao), 2) as media_avaliacao'))
-        ->groupBy('filmes.id', 'filmes.nome', 'filmes.resumo', 'filmes.urlimg')
+        ->select('filmes.id', 'filmes.nome', 'filmes.urlimg', DB::raw('ROUND(AVG(comentarios.avaliacao), 2) as media_avaliacao'))
+        ->groupBy('filmes.id', 'filmes.nome', 'filmes.urlimg')
         ->havingRaw('AVG(comentarios.avaliacao) > 4')
         ->orderByDesc('media_avaliacao')
         ->paginate(3);
@@ -64,6 +65,16 @@ class FilmesController extends Controller
         ])->with('filmes', $filmes)
         ->with('mensagemSucesso', $mensagemSucesso);
     }
+    public function getRandom()
+    {
+        $randomFilm = Filmes::inRandomOrder()->first(); // Obtém um filme aleatório da tabela "filmes"
+
+        if ($randomFilm) {
+            return redirect()->route('filmes.saiba_mais', $randomFilm->id); // Redireciona para a página "Saiba mais" do filme aleatório
+        } else {
+            return false;
+        }
+    }
 
     public function search()
     {
@@ -74,17 +85,17 @@ class FilmesController extends Controller
     {
         if ($genero !== 'todos') {
             $filmes = Filmes::leftJoin('comentarios', 'filmes.id', '=', 'comentarios.filme_id')
-                ->select('filmes.id', 'filmes.nome', 'filmes.resumo', 'filmes.urlimg', DB::raw('COALESCE(ROUND(AVG(comentarios.avaliacao), 2), "Não Avaliado!") as media_avaliacao'))
+                ->select('filmes.id', 'filmes.nome', 'filmes.urlimg', DB::raw('COALESCE(ROUND(AVG(comentarios.avaliacao), 2), "Não Avaliado!") as media_avaliacao'))
                 ->where('categoria', $genero)
-                ->groupBy('filmes.id', 'filmes.nome', 'filmes.resumo', 'filmes.urlimg')
+                ->groupBy('filmes.id', 'filmes.nome', 'filmes.urlimg')
                 ->orderBy('nome', 'asc')
                 ->get();
 
             return response()->json($filmes);
         } else {
             $filmes = Filmes::leftJoin('comentarios', 'filmes.id', '=', 'comentarios.filme_id')
-                ->select('filmes.id', 'filmes.nome', 'filmes.resumo', 'filmes.urlimg', DB::raw('COALESCE(ROUND(AVG(comentarios.avaliacao), 2), "Não Avaliado!") as media_avaliacao'))
-                ->groupBy('filmes.id', 'filmes.nome', 'filmes.resumo', 'filmes.urlimg')
+                ->select('filmes.id', 'filmes.nome', 'filmes.urlimg', DB::raw('COALESCE(ROUND(AVG(comentarios.avaliacao), 2), "Não Avaliado!") as media_avaliacao'))
+                ->groupBy('filmes.id', 'filmes.nome', 'filmes.urlimg')
                 ->orderBy('nome', 'asc')
                 ->get();
 
@@ -114,7 +125,7 @@ class FilmesController extends Controller
 
 
             $filme = $this->repository->add($request);
-            $filme->urlimg = $caminhoImagem; // Salva o caminho da imagem
+            $filme->urlimg = $caminhoImagem;
             $filme->save();
 
             return redirect()->route('filmes.index')
@@ -124,6 +135,79 @@ class FilmesController extends Controller
 
         return to_route('filmes.index')
             ->with('mensagem.sucesso', "Filme '{$filme->nome}' adicionado com sucesso");
+    }
+
+    public function apiStore()
+    {
+        $apiKey = 'bf1ddac8920d395547c13e1bad46874c';
+        $pageNumber = 1; // Página inicial
+        $totalMovies = 0; // Contador de filmes
+
+        do {
+            $movieListUrl = "https://api.themoviedb.org/3/movie/popular?api_key={$apiKey}&language=pt-BR&page={$pageNumber}";
+            $response = Http::get($movieListUrl);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $movies = $data['results'];
+
+                foreach ($movies as $movie) {
+                    if ($totalMovies >= 100) {
+                        break; // Sai do loop se já tiver 100 filmes cadastrados
+                    }
+
+                    $movieName = $movie['title'];
+
+                    // Verifica se o filme já existe no banco de dados pelo nome
+                    $existingMovie = Filmes::where('nome', $movieName)->first();
+
+                    if (!$existingMovie) {
+                        $movieId = $movie['id'];
+                        $creditsUrl = "https://api.themoviedb.org/3/movie/{$movieId}/credits?api_key={$apiKey}&language=pt-BR";
+                        $detailsUrl = "https://api.themoviedb.org/3/movie/{$movieId}?api_key={$apiKey}&language=pt-BR";
+
+                        $creditsResponse = Http::get($creditsUrl);
+                        $detailsResponse = Http::get($detailsUrl);
+
+                        if ($creditsResponse->successful() && $detailsResponse->successful()) {
+                            $creditsData = $creditsResponse->json();
+                            $movieDetails = $detailsResponse->json();
+
+                            // Resto do seu código para processar e salvar os filmes
+                            $diretor = collect($creditsData['crew'])->first(function ($member) {
+                                return $member['department'] === 'Directing';
+                            });
+
+                            $atorPrincipal = $creditsData['cast'][0];
+
+                            $diretorNome = $diretor ? $diretor['name'] : 'Diretor desconhecido';
+                            $diretorModel = Diretores::firstOrNew(['nome' => $diretorNome]);
+                            $diretorModel->save();
+
+                            $atorPrincipalNome = $atorPrincipal ? $atorPrincipal['name'] : 'Ator principal desconhecido';
+                            $atorPrincipalModel = Atores::firstOrNew(['nome' => $atorPrincipalNome]);
+                            $atorPrincipalModel->save();
+
+                            $filme = new Filmes();
+                            $filme->nome = $movieDetails['title'];
+                            $filme->fk_diretor = $diretorModel->id;
+                            $filme->fk_ator_principal = $atorPrincipalModel->id;
+                            $filme->descricao = $movieDetails['overview'] ? $movieDetails['overview'] : "Não encontrada";
+                            $filme->categoria = $movieDetails['genres'][0]['name'];
+                            $filme->urlimg = "https://image.tmdb.org/t/p/w500{$movieDetails['poster_path']}";
+                            $filme->save();
+
+                            $totalMovies++;
+                        }
+                    }
+                }
+
+                $pageNumber++; // Avança para a próxima página
+            }
+        } while (!empty($movies) && $totalMovies < 100);
+
+        return redirect()->route('filmes.index')
+            ->with('mensagem.sucesso', "Total de $totalMovies filmes da API adicionados com sucesso");
     }
 
     public function destroy(Filmes $filmes)
@@ -154,7 +238,6 @@ class FilmesController extends Controller
             return redirect()->route('filmes.index')->with('error', 'Filme não encontrado.');
         }
 
-        // Carregar os comentários associados a este filme.
         $comentarios = $filme->comentarios;
         $user = auth()->user();
         $isAdmin = $user && $user->admin == 1;
@@ -164,35 +247,29 @@ class FilmesController extends Controller
 
     public function update(Request $request, $filmeId)
     {
-        // Encontre o filme que você deseja atualizar com base no $filmeId
         $filme = Filmes::find($filmeId);
 
-        // Verifique se o filme foi encontrado
         if (!$filme) {
             return redirect()->route('filmes.index')->with('error', 'Filme não encontrado.');
         }
 
-        // Atualize os campos do filme com base nos dados do formulário
         $filme->nome = $request->input('nome');
         $filme->descricao = $request->input('descricao');
         $filme->categoria = $request->input('categoria');
-        $filme->resumo = $request->input('resumo');
         $filme->fk_ator_principal = $request->input('fk_ator_principal');
         $filme->fk_diretor = $request->input('fk_diretor');
 
-        // Verifique se uma nova imagem foi enviada no formulário
         if ($request->hasFile('urlimg')) {
             $imagem = $request->file('urlimg');
             $nomeOriginal = $imagem->getClientOriginalName();
             $nomeSeguro = Str::slug(pathinfo($nomeOriginal, PATHINFO_FILENAME)) . '.' . $imagem->getClientOriginalExtension();
             $caminhoImagem = $imagem->storeAs('filmes_capa', $nomeSeguro, 'public');
-            $filme->urlimg = $caminhoImagem; // Atualize o campo da imagem com o novo caminho
+            $filme->urlimg = $caminhoImagem;
         }
 
-        // Salve as alterações no banco de dados
         $filme->save();
 
-        $mensagemSucesso = 'Filme atualizado com sucesso'; // Defina a mensagem de sucesso aqui
+        $mensagemSucesso = 'Filme atualizado com sucesso';
         $atores = Atores::all();
         $diretores = Diretores::all();
 

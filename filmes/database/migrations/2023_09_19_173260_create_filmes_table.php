@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('nome', 328);
             $table->text('descricao');
             $table->string('categoria', 100);
-            $table->text('resumo');
             $table->text('urlimg');
             $table->unsignedBigInteger('fk_ator_principal');
             $table->foreign('fk_ator_principal')->references('id')->on('atores');
