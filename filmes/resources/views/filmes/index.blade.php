@@ -21,7 +21,7 @@
                     <li class="list-group-item d-flex" style="justify-content: space-evenly; min-width: 1225px;">
                         @foreach ($bestRatedFilmes as $filme)
                             <div class="card">
-                                <img src="{{ asset('storage/' . ($filme->urlimg ?? 'filmes_capa/capa_padrao.avif')) }}" alt="Card Image" style="width:100%">
+                                <img src="{{ $filme->urlimg }}" alt="Card Image" style="width:100%">
                                 <div class="card-content">
                                     <h3 class="card-title">{{ $filme->nome }}</h3>
                                     <b><p class="card-avaliacao">Avaliação: {{ $filme->media_avaliacao }}&#9733;</p></b>

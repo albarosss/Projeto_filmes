@@ -30,4 +30,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'guzzle' => [
+        'timeout' => 12000, // Defina o tempo limite global para 120 segundos
+        // Outras configurações do Guzzle
+    ],
+
 ];

@@ -27,8 +27,7 @@ class FilmesFormRequest extends FormRequest
             'nome' => ['required', 'min:2'],
             'descricao' => ['required', 'min:20'],
             'categoria' => ['required'],
-            'resumo' => ['required', 'min:20'],
-            'urlimg' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // Adicione regras para a imagem
+            'urlimg' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'fk_ator_principal' => ['required'],
             'fk_diretor' => ['required'],
         ];

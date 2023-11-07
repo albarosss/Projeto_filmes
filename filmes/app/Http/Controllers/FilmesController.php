@@ -139,20 +139,22 @@ class FilmesController extends Controller
 
     public function apiStore()
     {
+        set_time_limit(0); // Define o limite de tempo para ilimitado (0) ou para um valor maior
+
         $apiKey = 'bf1ddac8920d395547c13e1bad46874c';
         $pageNumber = 1; // Página inicial
         $totalMovies = 0; // Contador de filmes
 
         do {
             $movieListUrl = "https://api.themoviedb.org/3/movie/popular?api_key={$apiKey}&language=pt-BR&page={$pageNumber}";
-            $response = Http::get($movieListUrl);
+            $response = Http::timeout(120)->get($movieListUrl);
 
             if ($response->successful()) {
                 $data = $response->json();
                 $movies = $data['results'];
 
                 foreach ($movies as $movie) {
-                    if ($totalMovies >= 100) {
+                    if ($totalMovies >= 10000) {
                         break; // Sai do loop se já tiver 100 filmes cadastrados
                     }
 
@@ -166,8 +168,8 @@ class FilmesController extends Controller
                         $creditsUrl = "https://api.themoviedb.org/3/movie/{$movieId}/credits?api_key={$apiKey}&language=pt-BR";
                         $detailsUrl = "https://api.themoviedb.org/3/movie/{$movieId}?api_key={$apiKey}&language=pt-BR";
 
-                        $creditsResponse = Http::get($creditsUrl);
-                        $detailsResponse = Http::get($detailsUrl);
+                        $creditsResponse = Http::timeout(120)->get($creditsUrl);
+                        $detailsResponse = Http::timeout(120)->get($detailsUrl);
 
                         if ($creditsResponse->successful() && $detailsResponse->successful()) {
                             $creditsData = $creditsResponse->json();
@@ -178,13 +180,23 @@ class FilmesController extends Controller
                                 return $member['department'] === 'Directing';
                             });
 
-                            $atorPrincipal = $creditsData['cast'][0];
+                            if (isset($creditsData['cast'][0])) {
+                                $atorPrincipal = $creditsData['cast'][0];
+                            } else {
+
+                                $atorPrincipal = "Não encontrado";
+                            }
 
                             $diretorNome = $diretor ? $diretor['name'] : 'Diretor desconhecido';
                             $diretorModel = Diretores::firstOrNew(['nome' => $diretorNome]);
                             $diretorModel->save();
 
-                            $atorPrincipalNome = $atorPrincipal ? $atorPrincipal['name'] : 'Ator principal desconhecido';
+                            if (is_string($atorPrincipal)) {
+                                $atorPrincipalNome = $atorPrincipal;
+                            } else {
+                                $atorPrincipalNome = $atorPrincipal['name'];
+                            }
+
                             $atorPrincipalModel = Atores::firstOrNew(['nome' => $atorPrincipalNome]);
                             $atorPrincipalModel->save();
 
@@ -193,7 +205,11 @@ class FilmesController extends Controller
                             $filme->fk_diretor = $diretorModel->id;
                             $filme->fk_ator_principal = $atorPrincipalModel->id;
                             $filme->descricao = $movieDetails['overview'] ? $movieDetails['overview'] : "Não encontrada";
-                            $filme->categoria = $movieDetails['genres'][0]['name'];
+                            if (!empty($movieDetails['genres']) && isset($movieDetails['genres'][0]['name'])) {
+                                $filme->categoria = $movieDetails['genres'][0]['name'];
+                            } else {
+                                $filme->categoria = "Gênero desconhecido";
+                            }
                             $filme->urlimg = "https://image.tmdb.org/t/p/w500{$movieDetails['poster_path']}";
                             $filme->save();
 
