@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function ()
                     card.className = 'card';
                     console.log(filme.urlimg);
                     var img = document.createElement('img');
-                    img.src = filme.urlimg ? 'storage/' + filme.urlimg : 'storage/' + 'filmes_capa/capa_padrao.avif';
+                    img.src = filme.urlimg;
                     img.alt = 'Card Image';
                     img.style.width = '100%';
 
