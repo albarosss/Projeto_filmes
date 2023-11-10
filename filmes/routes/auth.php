@@ -58,7 +58,6 @@ Route::get('/filmes/{filmes}/filmes', [FilmesController::class, 'saibaMais'])
 
 Route::middleware(['auth', 'admin'])->group(function ()
 {
-
     Route::get('/filmes/create', [FilmesController::class, 'create'])->name('filmes.create');
 
     Route::get('/filmes/createApi', [FilmesController::class, 'apiStore'])->name('filmes.createApi');
@@ -69,9 +68,6 @@ Route::middleware(['auth', 'admin'])->group(function ()
     Route::post('/diretores', [DiretoresController::class, 'store'])->name('diretores.store');
 
     Route::post('/atores', [AtoresController::class, 'store'])->name('atores.store');
-
-    Route::post('/filmes/{filmes}/comentar', [FilmesController::class, 'comentar'])
-    ->name('filmes.comentar');
 });
 
 
@@ -98,7 +94,11 @@ Route::middleware('auth')->group(function () {
                 ->name('logout');
 
     Route::get('/users/editar', [PerfilController::class, 'editar'])->name('editar');
+
     Route::put('/users/atualizar', [PerfilController::class, 'atualizar'])->name('users.atualizar');
+
+    Route::post('/filmes/{filmes}/comentar', [FilmesController::class, 'comentar'])
+    ->name('filmes.comentar');
 
 });
 

@@ -4,83 +4,83 @@ var campo_search = document.getElementById('search-input');
 
 
 
-var genres= {};
-const apiKey = 'bf1ddac8920d395547c13e1bad46874c';
+// var genres= {};
+// const apiKey = 'bf1ddac8920d395547c13e1bad46874c';
 
-// 1. Obter uma lista de filmes (por exemplo, filmes populares)
-const movieListUrl = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=pt-BR`;
+// // 1. Obter uma lista de filmes (por exemplo, filmes populares)
+// const movieListUrl = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=pt-BR`;
 
-fetch(movieListUrl)
-  .then(response => {
-    if (response.status === 200) {
-      return response.json();
-    } else {
-      throw new Error('Falha ao obter a lista de filmes populares.');
-    }
-  })
-  .then(data => {
-    // Vamos supor que data.results é uma matriz de filmes
-    const movies = data.results;
+// fetch(movieListUrl)
+//   .then(response => {
+//     if (response.status === 200) {
+//       return response.json();
+//     } else {
+//       throw new Error('Falha ao obter a lista de filmes populares.');
+//     }
+//   })
+//   .then(data => {
+//     // Vamos supor que data.results é uma matriz de filmes
+//     const movies = data.results;
 
-    // 2. Para cada filme, obtenha o nome do diretor, ator principal e outros detalhes
-    movies.forEach(movie => {
-      const movieId = movie.id;
-      const creditsUrl = `https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${apiKey}&language=pt-BR`;
-      const detailsUrl = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&language=pt-BR`;
+//     // 2. Para cada filme, obtenha o nome do diretor, ator principal e outros detalhes
+//     movies.forEach(movie => {
+//       const movieId = movie.id;
+//       const creditsUrl = `https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${apiKey}&language=pt-BR`;
+//       const detailsUrl = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&language=pt-BR`;
 
-      fetch(creditsUrl)
-        .then(response => {
-          if (response.status === 200) {
-            return response.json();
-          } else {
-            throw new Error('Falha ao obter os créditos do filme.');
-          }
-        })
-        .then(creditsData => {
-          const cast = creditsData.cast;
-          const crew = creditsData.crew;
+//       fetch(creditsUrl)
+//         .then(response => {
+//           if (response.status === 200) {
+//             return response.json();
+//           } else {
+//             throw new Error('Falha ao obter os créditos do filme.');
+//           }
+//         })
+//         .then(creditsData => {
+//           const cast = creditsData.cast;
+//           const crew = creditsData.crew;
 
-          // Encontre o diretor (normalmente, o diretor é creditado com o departamento 'Directing')
-          const diretor = crew.find(member => member.department === 'Directing');
-          const nomeDoDiretor = diretor ? diretor.name : 'Diretor desconhecido';
+//           // Encontre o diretor (normalmente, o diretor é creditado com o departamento 'Directing')
+//           const diretor = crew.find(member => member.department === 'Directing');
+//           const nomeDoDiretor = diretor ? diretor.name : 'Diretor desconhecido';
 
-          // Encontre o ator principal (normalmente, o ator principal é o primeiro da lista de elenco)
-          const atorPrincipal = cast.length > 0 ? cast[0].name : 'Ator principal desconhecido';
+//           // Encontre o ator principal (normalmente, o ator principal é o primeiro da lista de elenco)
+//           const atorPrincipal = cast.length > 0 ? cast[0].name : 'Ator principal desconhecido';
 
-          fetch(detailsUrl)
-            .then(response => {
-              if (response.status === 200) {
-                return response.json();
-              } else {
-                throw new Error('Falha ao obter os detalhes do filme.');
-              }
-            })
-            .then(movieDetails => {
-              const descricao = movieDetails.overview;
-              const categorias = movieDetails.genres.map(genre => genre.name).join(', ');
-              var categoria = categorias.split(',')
-              const imagemUrl = `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`;
+//           fetch(detailsUrl)
+//             .then(response => {
+//               if (response.status === 200) {
+//                 return response.json();
+//               } else {
+//                 throw new Error('Falha ao obter os detalhes do filme.');
+//               }
+//             })
+//             .then(movieDetails => {
+//               const descricao = movieDetails.overview;
+//               const categorias = movieDetails.genres.map(genre => genre.name).join(', ');
+//               var categoria = categorias.split(',')
+//               const imagemUrl = `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`;
 
-              console.log(`Filme: ${movie.title}`);
-              console.log(`Diretor: ${nomeDoDiretor}`);
-              console.log(`Ator Principal: ${atorPrincipal}`);
-              console.log(`Descrição: ${descricao}`);
-              console.log(`Categoria: ${categoria[0]}`);
-              console.log(`URL da imagem: ${imagemUrl}`);
-              console.log('---');
-            })
-            .catch(error => {
-              console.error(error);
-            });
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    });
-  })
-  .catch(error => {
-    console.error(error);
-  });
+//               console.log(`Filme: ${movie.title}`);
+//               console.log(`Diretor: ${nomeDoDiretor}`);
+//               console.log(`Ator Principal: ${atorPrincipal}`);
+//               console.log(`Descrição: ${descricao}`);
+//               console.log(`Categoria: ${categoria[0]}`);
+//               console.log(`URL da imagem: ${imagemUrl}`);
+//               console.log('---');
+//             })
+//             .catch(error => {
+//               console.error(error);
+//             });
+//         })
+//         .catch(error => {
+//           console.error(error);
+//         });
+//     });
+//   })
+//   .catch(error => {
+//     console.error(error);
+//   });
 
 
 
@@ -90,15 +90,16 @@ document.getElementById('button-random-film').addEventListener('click', function
 
 campo_search.addEventListener("click", function () {
     fetch('http://127.0.0.1:8000/filmes/search')
-     .then(function (response) {
-         if (!response.ok) {
-             throw new Error('Erro na requisição: ' + response.status);
-         }
-         return response.json();
-     })
-     .then(function (data) {
-         filmes = data; // Armazene os dados dos filmes na variável
-     })
+    .then(function (response) {
+        if (!response.ok) {
+            throw new Error('Erro na requisição: ' + response.status);
+        }
+        return response.json();
+    })
+    .then(function (data)
+    {
+        filmes = data;
+    })
 });
 
 var categoriaDropdownButton = document.getElementById("categoriaDropdown");
@@ -106,7 +107,6 @@ var categoriaDropdownButton = document.getElementById("categoriaDropdown");
 var categoriaDropdownMenu = document.querySelector(".dropdown-menu");
 
 categoriaDropdownButton.addEventListener("click", function () {
-    // Verifica se o menu de dropdown está visível
     var isDropdownVisible = categoriaDropdownMenu.style.display === "block";
 
     categoriaDropdownMenu.style.display = isDropdownVisible ? "none" : "block";
@@ -115,13 +115,12 @@ categoriaDropdownButton.addEventListener("click", function () {
 
 document.addEventListener("DOMContentLoaded", function ()
 {
-    // mermaid.initialize({ startOnLoad: true });
     const categoriaButtons = document.querySelectorAll('.categoria-btn');
     const cardsContainer = document.querySelector('.cards-container');
     const semFilmesG = document.getElementById('no-films-message');
     categoriaButtons.forEach(async function (button) {
         button.addEventListener("click", async function (e) {
-            e.preventDefault(); // Impede o comportamento padrão do link
+            e.preventDefault();
 
             var genero = $(this).data("genero");
             await fetch(`http://127.0.0.1:8000/filmes/genero/${genero}`)
@@ -129,18 +128,14 @@ document.addEventListener("DOMContentLoaded", function ()
                 if (!response.ok) {
                     throw new Error('Erro na requisição: ' + response.status);
                 }
-                return response.json(); // Isso irá ler e processar o corpo JSON
+                return response.json();
             })
             .then(function (data) {
-                // Limpando o conteúdo atual
                 cardsContainer.innerHTML = '';
                 data.length == 0 ? semFilmesG.style.display = 'block' : semFilmesG.style.display = 'none';
 
-                var currentUl; // Variável para acompanhar a lista <ul> atual
 
-                // Iterando pelos novos dados e atualizando o DOM
                 data.forEach(function (filme, index) {
-                    // Criar um item da lista <li>
                     var cardListItem = document.createElement('li');
                     cardListItem.className = 'd-flex align-items-center';
                     cardListItem.style.margin = '10px';
@@ -184,16 +179,15 @@ document.addEventListener("DOMContentLoaded", function ()
                     card.appendChild(img);
                     card.appendChild(cardContent);
 
-                    cardListItem.appendChild(card); // Anexar o card ao item da lista
+                    cardListItem.appendChild(card);
 
                     if (index % 3 === 0) {
-                        // Se este é o primeiro filme da nova lista, crie uma nova lista <ul>
                         currentUl = document.createElement('ul');
                         currentUl.className = 'list-group flex-row';
                         cardsContainer.appendChild(currentUl);
                     }
 
-                    currentUl.appendChild(cardListItem); // Anexar o item da lista à lista <ul>
+                    currentUl.appendChild(cardListItem);
                 });
 
                 var isDropdownVisible = categoriaDropdownMenu.style.display === "block";
@@ -227,8 +221,11 @@ document.addEventListener("DOMContentLoaded", function ()
         }
 
         filmeDropdown.innerHTML = "";
-        const filmesEncontrados = filmes.filter((filme) =>
-            filme.nome.toLowerCase().includes(searchTerm)
+
+        const arrayDeFilmes = Object.values(filmes);
+
+        const filmesEncontrados = arrayDeFilmes.filter((filme) =>
+            filme.nome.toLowerCase().includes(searchTerm.toLowerCase())
         );
         if (filmesEncontrados.length === 0)
         {
