@@ -82,6 +82,195 @@ var campo_search = document.getElementById('search-input');
 //     console.error(error);
 //   });
 
+// Use a função recursiva com parâmetros de gênero e ano
+
+const runMoviesFetching = async () =>
+{
+    const genres = {};
+    const apiKey = 'bf1ddac8920d395547c13e1bad46874c';
+    const moviesPerPage = 20;
+    const delayBetweenRequests = 500;
+
+    const fetchMovieDetails = async (movie) => {
+        const movieId = movie.id;
+
+        if (genres[movieId]) {
+            console.log('Filme já processado. Ignorando:', movie.title);
+            return;
+        }
+
+        const creditsUrl = `https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${apiKey}&language=pt-BR`;
+        const detailsUrl = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&language=pt-BR`;
+
+        try {
+            const [creditsResponse, detailsResponse] = await Promise.all([
+                fetch(creditsUrl),
+                fetch(detailsUrl)
+            ]);
+
+            if (!creditsResponse.ok || !detailsResponse.ok) {
+                throw new Error('Falha ao obter os créditos ou detalhes do filme.');
+            }
+
+            const [creditsData, movieDetails] = await Promise.all([
+                creditsResponse.json(),
+                detailsResponse.json()
+            ]);
+
+            const cast = creditsData.cast;
+            const crew = creditsData.crew;
+
+            const diretor = crew.find(member => member.department === 'Directing');
+            const nomeDoDiretor = diretor ? diretor.name : 'Diretor desconhecido';
+
+            const atorPrincipal = cast.length > 0 ? cast[0].name : 'Ator principal desconhecido';
+
+            // Tratando a descrição para evitar valores nulos
+            const descricao = movieDetails.overview || 'Sem descrição disponível';
+
+            const categorias = movieDetails.genres.map(genre => genre.name).join(', ');
+            const categoria = categorias.split(',');
+
+            // Verificar se a URL da imagem é nula antes de construir o URL
+            const imagemUrl = movieDetails.poster_path ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}` : null;
+
+            // Se a URL da imagem for nula, ignore o filme
+            if (!imagemUrl) {
+                console.log('Imagem nula. Ignorando:', movie.title);
+                return;
+            }
+
+            const movieObject = {
+                nome: movie.title,
+                diretor: nomeDoDiretor,
+                atorPrincipal: atorPrincipal,
+                descricao: descricao,
+                categoria: categoria[0] || 'Sem categoria',
+                imagemUrl: imagemUrl
+            };
+
+            genres[movieId] = movieObject;
+
+        } catch (error) {
+            console.error('Erro ao processar filme:', error);
+        }
+    };
+
+    const fetchMovies = async (startPage, endPage, genreId, releaseYear) => {
+        let pageNumber = startPage;
+        let totalMoviesProcessed = 0;
+
+        while (pageNumber <= endPage) {
+            const movieListUrl = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=pt-BR&page=${pageNumber}&with_genres=${genreId}&primary_release_year=${releaseYear}`;
+
+            try {
+                const response = await fetch(movieListUrl);
+
+                if (!response.ok) {
+                    throw new Error(`Falha ao obter a lista de filmes. Página: ${pageNumber}`);
+                }
+
+                const data = await response.json();
+                const movies = data.results;
+
+                await Promise.all(movies.map(movie => fetchMovieDetails(movie)));
+
+                totalMoviesProcessed += movies.length;
+                pageNumber++;
+            } catch (error) {
+                console.error(`Erro ao obter filmes. Página: ${pageNumber}`, error);
+                break;
+            }
+
+            // Um intervalo antes de fazer a próxima solicitação
+            await new Promise(resolve => setTimeout(resolve, delayBetweenRequests));
+        }
+
+        return totalMoviesProcessed; // Adicione esta linha para retornar a contagem de filmes
+    };
+
+    const fetchMoviesRecursively = async (startPage, endPage, targetMovieCount, genreId, releaseYear) => {
+        if (startPage <= endPage) {
+            const currentMovies = await fetchMovies(startPage, endPage, genreId, releaseYear);
+
+            if (currentMovies !== undefined) {
+                const currentMovieCount = currentMovies.length;
+
+                if (currentMovieCount < targetMovieCount) {
+                    await fetchMoviesRecursively(endPage + 1, endPage + 50, targetMovieCount, genreId, releaseYear);
+                }
+            } else {
+                console.error('Erro ao obter filmes. A função fetchMovies não retornou dados.');
+            }
+        }
+    };
+
+    await fetchMoviesRecursively(50, 500, 10000, 28, 2022);
+
+
+    // Exiba o objeto genres com todos os filmes
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    const filmesArrays = {};
+
+    // Itera sobre os filmes
+    for (const id in genres) {
+        const filme = genres[id];
+        for (const propriedade in filme) {
+            if (!filmesArrays[propriedade]) {
+                filmesArrays[propriedade] = [];
+            }
+            filmesArrays[propriedade].push(filme[propriedade]);
+        }
+    }
+
+    console.log(filmesArrays);
+
+    fetch('filmes/createApi',
+    {
+        method: 'POST',
+        headers:
+        {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+        },
+        redirect: 'follow',
+        body: JSON.stringify(filmesArrays),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Erro na solicitação: ${response.status}`);
+        }
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Resposta do servidor não é JSON.');
+        }
+
+        return response.json();
+    })
+        .then(data => {
+            // resposta do servidor aqui
+            console.log('Resposta do servidor:', data);
+        })
+        .catch(error => {
+            console.error('Erro na solicitação:', error);
+
+            // Adicionei logs adicionais para depuração
+            console.log('Objeto genres:', genres);
+            console.log('Filmes Arrays:', filmesArrays);
+
+            if (error.response && error.response.text) {
+                console.error('Corpo da resposta:', error.response.text());
+            }
+        });
+
+
+};
+
+runMoviesFetching();
+
+
+
 
 
 document.getElementById('button-random-film').addEventListener('click', function() {

@@ -19,9 +19,11 @@
   .card-content {
     max-width: 300px;
     min-height: 228px;
+    max-height: 228px;
     padding: 20px;
     text-align: center;
     border: 2px solid #bbb8b8;
+    overflow: auto;
 
   }
 

@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use App\Repositories\FilmesRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Jobs\ProcessMovie;
 use Illuminate\Support\Facades\DB;
 
 class FilmesController extends Controller
@@ -19,6 +20,29 @@ class FilmesController extends Controller
     public function __construct(private FilmesRepository $repository)
     {
         $this->middleware('auth')->except('index', 'saibaMais', 'search', 'genero', 'getRandom');
+
+    }
+    private function getLastPage()
+    {
+        return DB::table('settings')->value('last_page') ?? 1;
+    }
+
+    private function setLastPage($lastPage)
+    {
+        DB::table('settings')->updateOrInsert(
+            ['id' => 1],
+            ['last_page' => $lastPage, 'last_movie_index' => $this->getLastMovieIndex()]
+        );
+    }
+
+    private function getLastMovieIndex()
+    {
+        return DB::table('settings')->value('last_movie_index') ?? 0;
+    }
+
+    private function setLastMovieIndex($lastMovieIndex)
+    {
+        DB::table('settings')->updateOrInsert(['id' => 1], ['last_movie_index' => $lastMovieIndex]);
     }
 
     public function comentar(Request $request, Filmes $filmes)
@@ -137,94 +161,246 @@ class FilmesController extends Controller
             ->with('mensagem.sucesso', "Filme '{$filme->nome}' adicionado com sucesso");
     }
 
-    public function apiStore()
+
+    // public function apiStore()
+    // {
+    //     set_time_limit(0); // Define o limite de tempo para ilimitado (0) ou para um valor maior
+
+    //     $apiKey = 'bf1ddac8920d395547c13e1bad46874c';
+    //     $pageNumber = 1; // Página inicial
+    //     $totalMovies = 0; // Contador de filmes
+
+    //     do {
+    //         $movieListUrl = "https://api.themoviedb.org/3/movie/popular?api_key={$apiKey}&language=pt-BR&page={$pageNumber}";
+    //         $response = Http::timeout(120)->get($movieListUrl);
+
+    //         if ($response->successful()) {
+    //             $data = $response->json();
+    //             $movies = $data['results'];
+
+    //             foreach ($movies as $movie) {
+    //                 if ($totalMovies >= 10000) {
+    //                     break; // Sai do loop se já tiver 100 filmes cadastrados
+    //                 }
+
+    //                 $movieName = $movie['title'];
+
+    //                 // Verifica se o filme já existe no banco de dados pelo nome
+    //                 $existingMovie = Filmes::where('nome', $movieName)->first();
+
+    //                 if (!$existingMovie) {
+    //                     $movieId = $movie['id'];
+    //                     $creditsUrl = "https://api.themoviedb.org/3/movie/{$movieId}/credits?api_key={$apiKey}&language=pt-BR";
+    //                     $detailsUrl = "https://api.themoviedb.org/3/movie/{$movieId}?api_key={$apiKey}&language=pt-BR";
+
+    //                     $creditsResponse = Http::timeout(120)->get($creditsUrl);
+    //                     $detailsResponse = Http::timeout(120)->get($detailsUrl);
+
+    //                     if ($creditsResponse->successful() && $detailsResponse->successful()) {
+    //                         $creditsData = $creditsResponse->json();
+    //                         $movieDetails = $detailsResponse->json();
+
+    //                         // Resto do seu código para processar e salvar os filmes
+    //                         $diretor = collect($creditsData['crew'])->first(function ($member) {
+    //                             return $member['department'] === 'Directing';
+    //                         });
+
+    //                         if (isset($creditsData['cast'][0])) {
+    //                             $atorPrincipal = $creditsData['cast'][0];
+    //                         } else {
+
+    //                             $atorPrincipal = "Não encontrado";
+    //                         }
+
+    //                         $diretorNome = $diretor ? $diretor['name'] : 'Diretor desconhecido';
+    //                         $diretorModel = Diretores::firstOrNew(['nome' => $diretorNome]);
+    //                         $diretorModel->save();
+
+    //                         if (is_string($atorPrincipal)) {
+    //                             $atorPrincipalNome = $atorPrincipal;
+    //                         } else {
+    //                             $atorPrincipalNome = $atorPrincipal['name'];
+    //                         }
+
+    //                         $atorPrincipalModel = Atores::firstOrNew(['nome' => $atorPrincipalNome]);
+    //                         $atorPrincipalModel->save();
+
+    //                         $filme = new Filmes();
+    //                         $filme->nome = $movieDetails['title'];
+    //                         $filme->fk_diretor = $diretorModel->id;
+    //                         $filme->fk_ator_principal = $atorPrincipalModel->id;
+    //                         $filme->descricao = $movieDetails['overview'] ? $movieDetails['overview'] : "Não encontrada";
+    //                         if (!empty($movieDetails['genres']) && isset($movieDetails['genres'][0]['name'])) {
+    //                             $filme->categoria = $movieDetails['genres'][0]['name'];
+    //                         } else {
+    //                             $filme->categoria = "Gênero desconhecido";
+    //                         }
+    //                         $filme->urlimg = "https://image.tmdb.org/t/p/w500{$movieDetails['poster_path']}";
+    //                         $filme->save();
+
+    //                         $totalMovies++;
+    //                     }
+    //                 }
+    //             }
+
+    //             $pageNumber++; // Avança para a próxima página
+    //         }
+    //     } while (!empty($movies) && $totalMovies < 100);
+
+    //     return redirect()->route('filmes.index')
+    //         ->with('mensagem.sucesso', "Total de $totalMovies filmes da API adicionados com sucesso");
+    // }
+
+    public function apiStore(Request $request)
     {
-        set_time_limit(0); // Define o limite de tempo para ilimitado (0) ou para um valor maior
+        set_time_limit(0);
 
-        $apiKey = 'bf1ddac8920d395547c13e1bad46874c';
-        $pageNumber = 1; // Página inicial
-        $totalMovies = 0; // Contador de filmes
+        $filmes = $request->json()->all();
 
-        do {
-            $movieListUrl = "https://api.themoviedb.org/3/movie/popular?api_key={$apiKey}&language=pt-BR&page={$pageNumber}";
-            $response = Http::timeout(120)->get($movieListUrl);
-
-            if ($response->successful()) {
-                $data = $response->json();
-                $movies = $data['results'];
-
-                foreach ($movies as $movie) {
-                    if ($totalMovies >= 10000) {
-                        break; // Sai do loop se já tiver 100 filmes cadastrados
-                    }
-
-                    $movieName = $movie['title'];
-
-                    // Verifica se o filme já existe no banco de dados pelo nome
-                    $existingMovie = Filmes::where('nome', $movieName)->first();
-
-                    if (!$existingMovie) {
-                        $movieId = $movie['id'];
-                        $creditsUrl = "https://api.themoviedb.org/3/movie/{$movieId}/credits?api_key={$apiKey}&language=pt-BR";
-                        $detailsUrl = "https://api.themoviedb.org/3/movie/{$movieId}?api_key={$apiKey}&language=pt-BR";
-
-                        $creditsResponse = Http::timeout(120)->get($creditsUrl);
-                        $detailsResponse = Http::timeout(120)->get($detailsUrl);
-
-                        if ($creditsResponse->successful() && $detailsResponse->successful()) {
-                            $creditsData = $creditsResponse->json();
-                            $movieDetails = $detailsResponse->json();
-
-                            // Resto do seu código para processar e salvar os filmes
-                            $diretor = collect($creditsData['crew'])->first(function ($member) {
-                                return $member['department'] === 'Directing';
-                            });
-
-                            if (isset($creditsData['cast'][0])) {
-                                $atorPrincipal = $creditsData['cast'][0];
-                            } else {
-
-                                $atorPrincipal = "Não encontrado";
-                            }
-
-                            $diretorNome = $diretor ? $diretor['name'] : 'Diretor desconhecido';
-                            $diretorModel = Diretores::firstOrNew(['nome' => $diretorNome]);
-                            $diretorModel->save();
-
-                            if (is_string($atorPrincipal)) {
-                                $atorPrincipalNome = $atorPrincipal;
-                            } else {
-                                $atorPrincipalNome = $atorPrincipal['name'];
-                            }
-
-                            $atorPrincipalModel = Atores::firstOrNew(['nome' => $atorPrincipalNome]);
-                            $atorPrincipalModel->save();
-
-                            $filme = new Filmes();
-                            $filme->nome = $movieDetails['title'];
-                            $filme->fk_diretor = $diretorModel->id;
-                            $filme->fk_ator_principal = $atorPrincipalModel->id;
-                            $filme->descricao = $movieDetails['overview'] ? $movieDetails['overview'] : "Não encontrada";
-                            if (!empty($movieDetails['genres']) && isset($movieDetails['genres'][0]['name'])) {
-                                $filme->categoria = $movieDetails['genres'][0]['name'];
-                            } else {
-                                $filme->categoria = "Gênero desconhecido";
-                            }
-                            $filme->urlimg = "https://image.tmdb.org/t/p/w500{$movieDetails['poster_path']}";
-                            $filme->save();
-
-                            $totalMovies++;
-                        }
-                    }
-                }
-
-                $pageNumber++; // Avança para a próxima página
+        foreach ($filmes['nome'] as $key => $nome) {
+            $filme = [
+                'nome' => $nome,
+                'diretor' => $filmes['diretor'][$key],
+                'atorPrincipal' => $filmes['atorPrincipal'][$key],
+                'descricao' => $filmes['descricao'][$key],
+                'categoria' => $filmes['categoria'][$key],
+                'imagemUrl' => $filmes['imagemUrl'][$key],
+            ];
+            if ($this->validarFilme($filme)) {
+                $this->salvarDiretor($filme['diretor']);
+                $this->salvarAtorPrincipal($filme['atorPrincipal']);
+                $this->salvarFilme($filme);
+            } else {
+                return response()->json(['mensagem' => 'Dados inválidos'], 400);
             }
-        } while (!empty($movies) && $totalMovies < 100);
+        }
 
-        return redirect()->route('filmes.index')
-            ->with('mensagem.sucesso', "Total de $totalMovies filmes da API adicionados com sucesso");
+        return response()->json(['mensagem' => 'Filmes salvos com sucesso']);
+
     }
+
+    private function validarFilme($filme)
+    {
+        return isset($filme['nome']) && isset($filme['diretor']) && isset($filme['atorPrincipal']);
+    }
+
+    private function salvarDiretor($diretorNome)
+    {
+        $diretorModel = Diretores::firstOrNew(['nome' => $diretorNome]);
+        $diretorModel->save();
+    }
+
+    private function salvarAtorPrincipal($atorPrincipalNome)
+    {
+        $atorPrincipalModel = Atores::firstOrNew(['nome' => $atorPrincipalNome]);
+        $atorPrincipalModel->save();
+    }
+
+    private function salvarFilme($filme)
+    {
+        $diretorModel = Diretores::where('nome', $filme['diretor'])->first();
+        $atorPrincipalModel = Atores::where('nome', $filme['atorPrincipal'])->first();
+
+        $filmeModel = Filmes::firstOrNew(['nome' => $filme['nome']]);
+        $filmeModel->fk_diretor = $diretorModel->id;
+        $filmeModel->fk_ator_principal = $atorPrincipalModel->id;
+        $filmeModel->descricao = $filme['descricao'];
+        $filmeModel->categoria = $filme['categoria'];
+        $filmeModel->urlimg = $filme['imagemUrl'];
+        $filmeModel->save();
+    }
+
+
+        // set_time_limit(0);
+
+        // $apiKey = 'bf1ddac8920d395547c13e1bad46874c';
+        // $pageNumber = $this->getLastPage();
+        // $totalMovies = 0;
+
+        // do {
+        //     $movieListUrl = "https://api.themoviedb.org/3/movie/popular?api_key={$apiKey}&language=pt-BR&page={$pageNumber}";
+        //     $response = Http::timeout(120)->get($movieListUrl);
+
+        //     if ($response->successful()) {
+        //         $data = $response->json();
+        //         $movies = $data['results'];
+
+        //         foreach ($movies as $index => $movie) {
+        //             if ($totalMovies >= 10000) {
+        //                 break;
+        //             }
+
+        //             $movieName = $movie['title'];
+
+        //             $existingMovie = Filmes::where('nome', $movieName)->first();
+
+        //             if (!$existingMovie) {
+        //                 $movieId = $movie['id'];
+        //                 $creditsUrl = "https://api.themoviedb.org/3/movie/{$movieId}/credits?api_key={$apiKey}&language=pt-BR";
+        //                 $detailsUrl = "https://api.themoviedb.org/3/movie/{$movieId}?api_key={$apiKey}&language=pt-BR";
+
+        //                 $creditsResponse = Http::timeout(120)->get($creditsUrl);
+        //                 $detailsResponse = Http::timeout(120)->get($detailsUrl);
+
+        //                 if ($creditsResponse->successful() && $detailsResponse->successful()) {
+        //                     $creditsData = $creditsResponse->json();
+        //                     $movieDetails = $detailsResponse->json();
+
+        //                     // Resto do seu código para processar e salvar os filmes
+        //                     $diretor = collect($creditsData['crew'])->first(function ($member) {
+        //                         return $member['department'] === 'Directing';
+        //                     });
+
+        //                     if (isset($creditsData['cast'][0])) {
+        //                         $atorPrincipal = $creditsData['cast'][0];
+        //                     } else {
+
+        //                         $atorPrincipal = "Não encontrado";
+        //                     }
+
+        //                     $diretorNome = $diretor ? $diretor['name'] : 'Diretor desconhecido';
+        //                     $diretorModel = Diretores::firstOrNew(['nome' => $diretorNome]);
+        //                     $diretorModel->save();
+
+        //                     if (is_string($atorPrincipal)) {
+        //                         $atorPrincipalNome = $atorPrincipal;
+        //                     } else {
+        //                         $atorPrincipalNome = $atorPrincipal['name'];
+        //                     }
+
+        //                     $atorPrincipalModel = Atores::firstOrNew(['nome' => $atorPrincipalNome]);
+        //                     $atorPrincipalModel->save();
+
+        //                     $filme = new Filmes();
+        //                     $filme->nome = $movieDetails['title'];
+        //                     $filme->fk_diretor = $diretorModel->id;
+        //                     $filme->fk_ator_principal = $atorPrincipalModel->id;
+        //                     $filme->descricao = $movieDetails['overview'] ? $movieDetails['overview'] : "Não encontrada";
+        //                     if (!empty($movieDetails['genres']) && isset($movieDetails['genres'][0]['name'])) {
+        //                         $filme->categoria = $movieDetails['genres'][0]['name'];
+        //                     } else {
+        //                         $filme->categoria = "Gênero desconhecido";
+        //                     }
+        //                     $filme->urlimg = "https://image.tmdb.org/t/p/w500{$movieDetails['poster_path']}";
+        //                     $filme->save();
+
+        //                     $totalMovies++;
+        //                 }
+        //             }
+        //         }
+
+        //         $pageNumber++; // Avança para a próxima página
+        //         $this->setLastPage($pageNumber);
+        //         $this->setLastMovieIndex($index);
+        //     }
+        // } while (!empty($movies) && $totalMovies < 10000);
+
+        // return redirect()->route('filmes.index')
+        //     ->with('mensagem.sucesso', "Total de $totalMovies filmes da API adicionados com sucesso");
+
+    // }
+
+
 
     public function destroy(Filmes $filmes)
     {

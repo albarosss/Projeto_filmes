@@ -60,7 +60,7 @@ Route::middleware(['auth', 'admin'])->group(function ()
 {
     Route::get('/filmes/create', [FilmesController::class, 'create'])->name('filmes.create');
 
-    Route::get('/filmes/createApi', [FilmesController::class, 'apiStore'])->name('filmes.createApi');
+    Route::post('/filmes/createApi', [FilmesController::class, 'apiStore'])->name('filmes.createApi');
 
     Route::get('/filmes/{filme}/editar',[FilmesController::class, 'edit'])->name('filmes.edit');
 
