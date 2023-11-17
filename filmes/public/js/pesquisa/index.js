@@ -186,7 +186,7 @@ const runMoviesFetching = async () =>
             await new Promise(resolve => setTimeout(resolve, delayBetweenRequests));
         }
 
-        return totalMoviesProcessed; // Adicione esta linha para retornar a contagem de filmes
+        return totalMoviesProcessed;
     };
 
     const fetchMoviesRecursively = async (startPage, endPage, targetMovieCount, genreId, releaseYear) => {
