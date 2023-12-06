@@ -50,13 +50,12 @@
         <div class="container-fluid">
             <a href="{{ route('filmes.index') }}">
                 <div class="div_bola bg-white"
-                    {{-- style="background-image: url({{ asset('logos/logo.png') }});"> --}}
                     style="background-image: url({{ asset('logos/logo3.jpeg') }});">
                 </div>
             </a>
 
             <div class="search-container">
-                <input type="text" class="search-input" id="search-input" placeholder="Pesquisar filmes...">
+                <input type="text" class="search-input" id="search-input" placeholder="Pesquisar filmes..." list="filmes-datalist" autocomplete="off">
             </div>
             <div class="dropdown-filme">
 
@@ -72,11 +71,24 @@
                         Categoria
                     </button>
                     <div class="dropdown-menu" aria-labelledby="categoriaDropdown">
-                        <a class="dropdown-item categoria-btn" data-genero="acao" href="{{ route('filmes.index', ['genero' => 'acao']) }}">Ação</a>
-                        <a class="dropdown-item categoria-btn" data-genero="comedia" href="{{ route('filmes.index', ['genero' => 'comedia']) }}">Comédia</a>
-                        <a class="dropdown-item categoria-btn" data-genero="terror" href="{{ route('filmes.index', ['genero' => 'terror']) }}">Terror</a>
-                        <a class="dropdown-item categoria-btn" data-genero="romance" href="{{ route('filmes.index', ['genero' => 'romance']) }}">Romane</a>
                         <a class="dropdown-item categoria-btn" data-genero="todos" href="{{ route('filmes.index') }}">Todos</a>
+                        <a class="dropdown-item categoria-btn" data-genero="acao" href="{{ route('filmes.index', ['genero' => 'acao']) }}">Ação</a>
+                        <a class="dropdown-item categoria-btn" data-genero="animacao" href="{{ route('filmes.index', ['genero' => 'animacao']) }}">Animação</a>
+                        <a class="dropdown-item categoria-btn" data-genero="aventura" href="{{ route('filmes.index', ['genero' => 'aventura']) }}">Aventura</a>
+                        <a class="dropdown-item categoria-btn" data-genero="comedia" href="{{ route('filmes.index', ['genero' => 'comedia']) }}">Comédia</a>
+                        <a class="dropdown-item categoria-btn" data-genero="crime" href="{{ route('filmes.index', ['genero' => 'crime']) }}">Crime</a>
+                        <a class="dropdown-item categoria-btn" data-genero="drama" href="{{ route('filmes.index', ['genero' => 'drama']) }}">Drama</a>
+                        <a class="dropdown-item categoria-btn" data-genero="familia" href="{{ route('filmes.index', ['genero' => 'familia']) }}">Família</a>
+                        <a class="dropdown-item categoria-btn" data-genero="fantasia" href="{{ route('filmes.index', ['genero' => 'fantasia']) }}">Fantasia</a>
+                        <a class="dropdown-item categoria-btn" data-genero="ficcao-cientifica" href="{{ route('filmes.index', ['genero' => 'ficcao-cientifica']) }}">Ficção Científica</a>
+                        <a class="dropdown-item categoria-btn" data-genero="historia" href="{{ route('filmes.index', ['genero' => 'historia']) }}">História</a>
+                        <a class="dropdown-item categoria-btn" data-genero="misterio" href="{{ route('filmes.index', ['genero' => 'misterio']) }}">Mistério</a>
+                        <a class="dropdown-item categoria-btn" data-genero="musica" href="{{ route('filmes.index', ['genero' => 'musica']) }}">Música</a>
+                        <a class="dropdown-item categoria-btn" data-genero="romance" href="{{ route('filmes.index', ['genero' => 'romance']) }}">Romance</a>
+                        <a class="dropdown-item categoria-btn" data-genero="terror" href="{{ route('filmes.index', ['genero' => 'terror']) }}">Terror</a>
+                        <a class="dropdown-item categoria-btn" data-genero="thriller" href="{{ route('filmes.index', ['genero' => 'thriller']) }}">Thriller</a>
+                        <a class="dropdown-item categoria-btn" data-genero="tv-movie" href="{{ route('filmes.index', ['genero' => 'tv-movie']) }}">TV Movie</a>
+                        <a class="dropdown-item categoria-btn" data-genero="western" href="{{ route('filmes.index', ['genero' => 'western']) }}">Western</a>
                     </div>
                 </div>
             </div>
@@ -89,7 +101,7 @@
                 </button>
                 <div class="dropdown-content">
                     {{-- <a href="{{ route('perfil') }}" class="dropdown-item">Editar Perfil</a> --}}
-                    <form action="{{ route('editar') }}" method="get">
+                    <form action="{{ route('users.editar') }}" method="get">
                         @csrf
                         <button type="submit" class="btn-logout">Editar Perfil</button>
                     </form>

@@ -3,6 +3,7 @@
     @auth
     @if ($isAdmin)
         <a href="{{ route('filmes.create') }}" class="adc_filmes btn btn-dark mb-2">Adicionar</a>
+        <a href="{{ route('users.list') }}" class="adc_filmes btn btn-dark mb-2">Usuários</a>
     @endif
     @endauth
 
@@ -58,7 +59,9 @@
             @endif
             <li class="d-flex align-items-center" style="margin: 10px; padding: 5px; width: fit-content; height: fit-content;">
                 <div class="card filmeC" data-genero="{{ $filme->categoria }}">
-                    <img src="{{ $filme->urlimg }}" alt="Card Image" style="width:100%">
+                    {{-- <img src="{{ $filme->urlimg }}" alt="Card Image" style="width:100%"> --}}
+                    <img src="{{ str_starts_with($filme->urlimg, 'https') ? $filme->urlimg : 'storage/' . ltrim($filme->urlimg, '/') }}" alt="Card Image" style="width:100%">
+
                     <div class="card-content">
                         <h3 class="card-title">{{ $filme->nome }}</h3>
                         <p style=" overflow-wrap: break-word;

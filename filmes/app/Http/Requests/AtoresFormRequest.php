@@ -25,7 +25,6 @@ class AtoresFormRequest extends FormRequest
     {
         return [
             'nome_ator' => ['required', 'min:2'],
-            'idade'=>['required']
         ];
     }
 }

@@ -7,7 +7,10 @@
     <h3 class="titulo">Informações do filme!</h3>
     <div class="card_v">
         {{-- <img src="{{ asset('filmes_capa/capa_padrao.avif') }}" alt="Card Image"> --}}
-        <img src="{{$filme->urlimg}}" alt="Card Image" >
+        {{-- <img src="{{$filme->urlimg}}" alt="Card Image" > --}}
+        <img src="{{ str_starts_with($filme->urlimg, 'https') ? $filme->urlimg : asset('storage/' . ltrim($filme->urlimg, '/')) }}" alt="Card Image">
+
+
         <div class="card_v-body">
             <div class="infos_filme">
                 <p><strong>Título:</strong> {{ $filme->nome }}</p>

@@ -9,7 +9,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\FilmesController;
-use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\UsersController;
 use App\Http\Controllers\DiretoresController;
 use App\Http\Controllers\AtoresController;
 use Illuminate\Support\Facades\Route;
@@ -58,16 +58,25 @@ Route::get('/filmes/{filmes}/filmes', [FilmesController::class, 'saibaMais'])
 
 Route::middleware(['auth', 'admin'])->group(function ()
 {
+    //  ROTAS DE FILME:
     Route::get('/filmes/create', [FilmesController::class, 'create'])->name('filmes.create');
-
     Route::post('/filmes/createApi', [FilmesController::class, 'apiStore'])->name('filmes.createApi');
-
     Route::get('/filmes/{filme}/editar',[FilmesController::class, 'edit'])->name('filmes.edit');
+    Route::delete('/filmes/{filme}', [FilmesController::class, 'destroy'])->name('filmes.destroy');
 
+    // ROTAS DE DIRETOR:
+    Route::post('/diretores_create', [DiretoresController::class, 'store'])->name('diretores.store');
+    Route::get('/diretores', [DiretoresController::class, 'list'])->name('diretores.list');
+    Route::put('/diretores/{id}', [DiretoresController::class, 'update'])->name('diretores.update');
+    Route::delete('/diretores/{id}', [DiretoresController::class, 'destroy'])->name('diretores.destroy');
 
-    Route::post('/diretores', [DiretoresController::class, 'store'])->name('diretores.store');
-
+    // ROTAS DE ATOR:
     Route::post('/atores', [AtoresController::class, 'store'])->name('atores.store');
+    Route::get('/atores', [AtoresController::class, 'list'])->name('atores.list');
+    Route::get('/atores/{id}/edit', [AtoresController::class, 'edit'])->name('atores.edit');
+    Route::put('/atores/{id}', [AtoresController::class, 'update'])->name('atores.update');
+    Route::delete('/atores/{id}', [AtoresController::class, 'destroy'])->name('atores.destroy');
+
 });
 
 
@@ -93,9 +102,13 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->name('logout');
 
-    Route::get('/users/editar', [PerfilController::class, 'editar'])->name('editar');
+    Route::get('/users/editar', [UsersController::class, 'editar'])->name('users.editar');
 
-    Route::put('/users/atualizar', [PerfilController::class, 'atualizar'])->name('users.atualizar');
+    Route::put('/users/atualizar', [UsersController::class, 'atualizar'])->name('users.atualizar');
+
+    Route::get('/users/list', [UsersController::class, 'list'])->name('users.list');
+
+    Route::delete('/users/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
 
     Route::post('/filmes/{filmes}/comentar', [FilmesController::class, 'comentar'])
     ->name('filmes.comentar');

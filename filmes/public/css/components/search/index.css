@@ -47,6 +47,7 @@
 }
 /* Estilos do dropdown de filmes */
 #filme-dropdown {
+    max-height: 250px; /* Ajuste conforme necessário */
     display: none;
     position: absolute;
     background-color: #fff; /* Cor de fundo do dropdown */

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Atores extends Model
 {
     use HasFactory;
-    protected $fillable = ['id','nome', 'idade'];
+    protected $fillable = ['id','nome'];
 
     protected static function booted()
     {
@@ -17,7 +17,5 @@ class Atores extends Model
             $queryBuilder->orderBy('nome');
         });
     }
-
-
 
 }

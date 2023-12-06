@@ -2,87 +2,9 @@ var filmes = '';
 
 var campo_search = document.getElementById('search-input');
 
+const cardContainer = document.querySelector('.cards-container');
 
-
-// var genres= {};
-// const apiKey = 'bf1ddac8920d395547c13e1bad46874c';
-
-// // 1. Obter uma lista de filmes (por exemplo, filmes populares)
-// const movieListUrl = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=pt-BR`;
-
-// fetch(movieListUrl)
-//   .then(response => {
-//     if (response.status === 200) {
-//       return response.json();
-//     } else {
-//       throw new Error('Falha ao obter a lista de filmes populares.');
-//     }
-//   })
-//   .then(data => {
-//     // Vamos supor que data.results é uma matriz de filmes
-//     const movies = data.results;
-
-//     // 2. Para cada filme, obtenha o nome do diretor, ator principal e outros detalhes
-//     movies.forEach(movie => {
-//       const movieId = movie.id;
-//       const creditsUrl = `https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${apiKey}&language=pt-BR`;
-//       const detailsUrl = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&language=pt-BR`;
-
-//       fetch(creditsUrl)
-//         .then(response => {
-//           if (response.status === 200) {
-//             return response.json();
-//           } else {
-//             throw new Error('Falha ao obter os créditos do filme.');
-//           }
-//         })
-//         .then(creditsData => {
-//           const cast = creditsData.cast;
-//           const crew = creditsData.crew;
-
-//           // Encontre o diretor (normalmente, o diretor é creditado com o departamento 'Directing')
-//           const diretor = crew.find(member => member.department === 'Directing');
-//           const nomeDoDiretor = diretor ? diretor.name : 'Diretor desconhecido';
-
-//           // Encontre o ator principal (normalmente, o ator principal é o primeiro da lista de elenco)
-//           const atorPrincipal = cast.length > 0 ? cast[0].name : 'Ator principal desconhecido';
-
-//           fetch(detailsUrl)
-//             .then(response => {
-//               if (response.status === 200) {
-//                 return response.json();
-//               } else {
-//                 throw new Error('Falha ao obter os detalhes do filme.');
-//               }
-//             })
-//             .then(movieDetails => {
-//               const descricao = movieDetails.overview;
-//               const categorias = movieDetails.genres.map(genre => genre.name).join(', ');
-//               var categoria = categorias.split(',')
-//               const imagemUrl = `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`;
-
-//               console.log(`Filme: ${movie.title}`);
-//               console.log(`Diretor: ${nomeDoDiretor}`);
-//               console.log(`Ator Principal: ${atorPrincipal}`);
-//               console.log(`Descrição: ${descricao}`);
-//               console.log(`Categoria: ${categoria[0]}`);
-//               console.log(`URL da imagem: ${imagemUrl}`);
-//               console.log('---');
-//             })
-//             .catch(error => {
-//               console.error(error);
-//             });
-//         })
-//         .catch(error => {
-//           console.error(error);
-//         });
-//     });
-//   })
-//   .catch(error => {
-//     console.error(error);
-//   });
-
-// Use a função recursiva com parâmetros de gênero e ano
+const filmesNoContainer = cardContainer && cardContainer.querySelectorAll('.card');
 
 const runMoviesFetching = async () =>
 {
@@ -95,7 +17,6 @@ const runMoviesFetching = async () =>
         const movieId = movie.id;
 
         if (genres[movieId]) {
-            console.log('Filme já processado. Ignorando:', movie.title);
             return;
         }
 
@@ -117,6 +38,9 @@ const runMoviesFetching = async () =>
                 detailsResponse.json()
             ]);
 
+            if (!movieDetails.overview || movieDetails.overview.trim() === '') {
+                return;
+            }
             const cast = creditsData.cast;
             const crew = creditsData.crew;
 
@@ -136,7 +60,6 @@ const runMoviesFetching = async () =>
 
             // Se a URL da imagem for nula, ignore o filme
             if (!imagemUrl) {
-                console.log('Imagem nula. Ignorando:', movie.title);
                 return;
             }
 
@@ -205,14 +128,11 @@ const runMoviesFetching = async () =>
         }
     };
 
-    await fetchMoviesRecursively(50, 500, 10000, 28, 2022);
+    await fetchMoviesRecursively(1, 5, 10000, 28, 2022);
 
-
-    // Exiba o objeto genres com todos os filmes
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
     const filmesArrays = {};
 
-    // Itera sobre os filmes
     for (const id in genres) {
         const filme = genres[id];
         for (const propriedade in filme) {
@@ -222,8 +142,6 @@ const runMoviesFetching = async () =>
             filmesArrays[propriedade].push(filme[propriedade]);
         }
     }
-
-    console.log(filmesArrays);
 
     fetch('filmes/createApi',
     {
@@ -240,37 +158,33 @@ const runMoviesFetching = async () =>
         if (!response.ok) {
             throw new Error(`Erro na solicitação: ${response.status}`);
         }
-
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
             throw new Error('Resposta do servidor não é JSON.');
         }
-
         return response.json();
     })
         .then(data => {
-            // resposta do servidor aqui
-            console.log('Resposta do servidor:', data);
+            localStorage.setItem('moviesRequestProcessed', 'true');
+
+            window.location.reload();
         })
         .catch(error => {
             console.error('Erro na solicitação:', error);
 
-            // Adicionei logs adicionais para depuração
-            console.log('Objeto genres:', genres);
-            console.log('Filmes Arrays:', filmesArrays);
 
             if (error.response && error.response.text) {
                 console.error('Corpo da resposta:', error.response.text());
             }
         });
-
-
 };
 
-runMoviesFetching();
 
-
-
+if (!filmesNoContainer || filmesNoContainer.length < 10) {
+    runMoviesFetching();
+} else {
+    console.log('Já existem filmes no card-container.');
+}
 
 
 document.getElementById('button-random-film').addEventListener('click', function() {
@@ -302,93 +216,36 @@ categoriaDropdownButton.addEventListener("click", function () {
 });
 
 
-document.addEventListener("DOMContentLoaded", function ()
+document.addEventListener("DOMContentLoaded", async function ()
 {
     const categoriaButtons = document.querySelectorAll('.categoria-btn');
-    const cardsContainer = document.querySelector('.cards-container');
-    const semFilmesG = document.getElementById('no-films-message');
-    categoriaButtons.forEach(async function (button) {
+
+    categoriaButtons.forEach(async function (button)
+    {
         button.addEventListener("click", async function (e) {
             e.preventDefault();
 
             var genero = $(this).data("genero");
-            await fetch(`http://127.0.0.1:8000/filmes/genero/${genero}`)
-            .then(function (response) {
-                if (!response.ok) {
-                    throw new Error('Erro na requisição: ' + response.status);
-                }
-                return response.json();
-            })
-            .then(function (data) {
-                cardsContainer.innerHTML = '';
-                data.length == 0 ? semFilmesG.style.display = 'block' : semFilmesG.style.display = 'none';
 
+            if (window.location.pathname !== '/filmes') {
+                window.location.href = '/filmes';
+                localStorage.setItem('generoParaFiltrar', genero);
+            }else{
+                await filtrarFilmes(genero);
+            }
 
-                data.forEach(function (filme, index) {
-                    var cardListItem = document.createElement('li');
-                    cardListItem.className = 'd-flex align-items-center';
-                    cardListItem.style.margin = '10px';
-                    cardListItem.style.padding = '5px';
-                    cardListItem.style.height = 'fit-content';
-
-                    var card = document.createElement('div');
-                    card.className = 'card';
-                    console.log(filme.urlimg);
-                    var img = document.createElement('img');
-                    img.src = filme.urlimg;
-                    img.alt = 'Card Image';
-                    img.style.width = '100%';
-
-                    var cardContent = document.createElement('div');
-                    cardContent.className = 'card-content';
-
-                    var cardTitle = document.createElement('h3');
-                    cardTitle.className = 'card-title';
-                    cardTitle.textContent = filme.nome;
-
-                    var cardDescription = document.createElement('p');
-                    cardDescription.className = 'card-description';
-
-                    var cardAvaliacao = document.createElement('b');
-                    var cardAvaliacaoText = document.createElement('p');
-                    cardAvaliacao.className = 'card-avaliacao';
-                    cardAvaliacaoText.textContent = filme.media_avaliacao === 'Não Avaliado!' ? `Avaliação: ${filme.media_avaliacao} ` : `Avaliação: ${filme.media_avaliacao} ★`;
-                    cardAvaliacao.appendChild(cardAvaliacaoText);
-
-                    var cardButton = document.createElement('a');
-                    cardButton.href = `{{ route('filmes.saiba_mais', ${filme.id}) }}`;
-                    cardButton.className = 'card-button';
-                    cardButton.textContent = 'Saiba mais';
-
-                    cardContent.appendChild(cardTitle);
-                    cardContent.appendChild(cardDescription);
-                    cardContent.appendChild(cardAvaliacao);
-                    cardContent.appendChild(cardButton);
-
-                    card.appendChild(img);
-                    card.appendChild(cardContent);
-
-                    cardListItem.appendChild(card);
-
-                    if (index % 3 === 0) {
-                        currentUl = document.createElement('ul');
-                        currentUl.className = 'list-group flex-row';
-                        cardsContainer.appendChild(currentUl);
-                    }
-
-                    currentUl.appendChild(cardListItem);
-                });
-
-                var isDropdownVisible = categoriaDropdownMenu.style.display === "block";
-                categoriaDropdownMenu.style.display = isDropdownVisible ? "none" : "block";
-            })
-            .catch(function (error) {
-                console.error(error);
-            });
         });
     });
 
+    const generoArmazenado = localStorage.getItem('generoParaFiltrar');
+    if (generoArmazenado)
+    {
+        localStorage.removeItem('generoParaFiltrar');
+        await filtrarFilmes(generoArmazenado);
 
+        var isDropdownVisible = categoriaDropdownMenu.style.display === "block";
+        categoriaDropdownMenu.style.display = isDropdownVisible ? "none" : "block";
+    }
 
 
 
@@ -443,9 +300,133 @@ document.addEventListener("DOMContentLoaded", function ()
             });
         }
     });
+
+    document.body.addEventListener("click", function (e) {
+        if (!filmeDropdown.contains(e.target) && e.target !== searchInput) {
+            filmeDropdown.style.display = "none";
+        }
+    });
+
+    filmeDropdown.addEventListener("click", function (e) {
+    });
+
+    filmeDropdown.addEventListener("transitionend", function () {
+        if (filmeDropdown.style.display === "none") {
+            document.body.removeEventListener("click", outsideClickHandler);
+        }
+    });
+
+    function outsideClickHandler(e) {
+        if (!filmeDropdown.contains(e.target) && e.target !== searchInput) {
+            filmeDropdown.style.display = "none";
+            document.body.removeEventListener("click", outsideClickHandler);
+        }
+    }
+
+    function showDropdown() {
+        filmeDropdown.style.display = "block";
+        document.body.addEventListener("click", outsideClickHandler);
+    }
+
+    function hideDropdown() {
+        filmeDropdown.style.display = "none";
+        document.body.removeEventListener("click", outsideClickHandler);
+    }
+
+    searchInput.addEventListener("click", function (e) {
+        e.stopPropagation();
+        showDropdown();
+    });
 });
 
 
 
 
 
+
+
+async function filtrarFilmes(genero, fora = false)
+{
+    const cardsContainer = document.querySelector('.cards-container');
+    const semFilmesG = document.getElementById('no-films-message');
+
+    await fetch(`http://127.0.0.1:8000/filmes/genero/${genero}`)
+    .then(function (response)
+    {
+        if (!response.ok) {
+            throw new Error('Erro na requisição: ' + response.status);
+        }
+        return response.json();
+    })
+    .then(function (data) {
+        cardsContainer.innerHTML = '';
+        data.length == 0 ? semFilmesG.style.display = 'block' : semFilmesG.style.display = 'none';
+
+
+        data.forEach(function (filme, index) {
+            var cardListItem = document.createElement('li');
+            cardListItem.className = 'd-flex align-items-center';
+            cardListItem.style.margin = '10px';
+            cardListItem.style.padding = '5px';
+            cardListItem.style.height = 'fit-content';
+
+            var card = document.createElement('div');
+            card.className = 'card';
+            var img = document.createElement('img');
+            img.src = filme.urlimg.startsWith("https") ? filme.urlimg : `storage/${filme.urlimg}`;
+            img.alt = 'Card Image';
+            img.style.width = '100%';
+
+            var cardContent = document.createElement('div');
+            cardContent.className = 'card-content';
+
+            var cardTitle = document.createElement('h3');
+            cardTitle.className = 'card-title';
+            cardTitle.textContent = filme.nome;
+
+            var cardDescription = document.createElement('p');
+            cardDescription.className = 'card-description';
+
+            var cardAvaliacao = document.createElement('b');
+            var cardAvaliacaoText = document.createElement('p');
+            cardAvaliacao.className = 'card-avaliacao';
+            console.log(filme)
+            cardAvaliacaoText.textContent = filme.media_avaliacao === 'Não Avaliado!' ? `Avaliação: ${filme.media_avaliacao} ` : `Avaliação: ${filme.media_avaliacao} ★`;
+            cardDescription.textContent = filme.descricao;
+            cardAvaliacao.appendChild(cardAvaliacaoText);
+
+            var cardButton = document.createElement('a');
+            cardButton.href = `/filmes/${filme.id}/filmes`;
+            cardButton.className = 'card-button';
+            cardButton.textContent = 'Saiba mais';
+
+
+
+            cardContent.appendChild(cardTitle);
+            cardContent.appendChild(cardDescription);
+            cardContent.appendChild(cardAvaliacao);
+            cardContent.appendChild(cardButton);
+
+            card.appendChild(img);
+            card.appendChild(cardContent);
+
+            cardListItem.appendChild(card);
+
+            if (index % 3 === 0) {
+                currentUl = document.createElement('ul');
+                currentUl.className = 'list-group flex-row';
+                cardsContainer.appendChild(currentUl);
+            }
+
+            currentUl.appendChild(cardListItem);
+        });
+
+
+        var isDropdownVisible = categoriaDropdownMenu.style.display === "block";
+        categoriaDropdownMenu.style.display = isDropdownVisible ? "none" : "block";
+
+    })
+    .catch(function (error) {
+        console.error(error);
+    });
+}

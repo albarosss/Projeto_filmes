@@ -90,12 +90,7 @@
                         <input type="text" id="atornome" name="nome_ator" class="form-control">
                     </div>
                 </div>
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <label for="idade" class="form-label">Idade:</label>
-                        <input type="number" id="idade" name="idade" class="form-control">
-                    </div>
-                </div>
+
                 <div class="row mb-1">
                     <div class="col-12">
                         <button type="submit" class="btn btn-primary" id="adicionarAtor">Adicionar</button>
