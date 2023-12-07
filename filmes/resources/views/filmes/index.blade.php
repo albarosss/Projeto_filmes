@@ -25,6 +25,7 @@
                                 <img src="{{ $filme->urlimg }}" alt="Card Image" style="width:100%">
                                 <div class="card-content">
                                     <h3 class="card-title">{{ $filme->nome }}</h3>
+                                    <p class="card-avaliacao">Avaliação: {{ $filme->descricao }}&#9733;</p>
                                     <b><p class="card-avaliacao">Avaliação: {{ $filme->media_avaliacao }}&#9733;</p></b>
                                     <a href="{{ route('filmes.saiba_mais', $filme->id) }}" class="card-button">Saiba mais</a>
                                 </div>

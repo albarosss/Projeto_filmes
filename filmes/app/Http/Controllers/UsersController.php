@@ -77,9 +77,11 @@ class UsersController
         }
         $user->save();
 
+        $mensagemSucesso = session('mensagem.sucesso');
 
-        return to_route('editar')
-            ->with('mensagem.sucesso', "Perfil atualizado");
+        session()->forget('mensagem.sucesso');
+
+        return view('users.edite', compact('user', 'mensagemSucesso'))->with('mensagem.sucesso', 'Usuário editado com sucesso.');
     }
 
 }

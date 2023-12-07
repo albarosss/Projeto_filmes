@@ -49,8 +49,8 @@ class FilmesController extends Controller
 
         $bestRatedFilmes = DB::table('filmes')
         ->join('comentarios', 'filmes.id', '=', 'comentarios.filme_id')
-        ->select('filmes.id', 'filmes.nome', 'filmes.urlimg', DB::raw('ROUND(AVG(comentarios.avaliacao), 2) as media_avaliacao'))
-        ->groupBy('filmes.id', 'filmes.nome', 'filmes.urlimg')
+        ->select('filmes.id', 'filmes.nome', 'filmes.urlimg','filmes.descricao', DB::raw('ROUND(AVG(comentarios.avaliacao), 2) as media_avaliacao'))
+        ->groupBy('filmes.id', 'filmes.nome', 'filmes.urlimg','filmes.descricao')
         ->havingRaw('AVG(comentarios.avaliacao) > 4')
         ->orderByDesc('media_avaliacao')
         ->paginate(3);

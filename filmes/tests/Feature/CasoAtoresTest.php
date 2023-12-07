@@ -14,6 +14,7 @@ class CasoAtoresTest extends TestCase
 
     public function test_criar_atores()
     {
+        // Arrange
         $user = User::factory()->create();
         $this->actingAs($user);
 
@@ -21,8 +22,10 @@ class CasoAtoresTest extends TestCase
             'nome_ator' => $this->faker->name,
         ];
 
+        // Act
         $this->post(route('atores.store'), $dados);
 
+        // Assert
         $this->assertCount(1, Atores::all());
         $this->assertStringContainsString($dados['nome_ator'], session('mensagem.sucesso'));
     }
@@ -33,7 +36,6 @@ class CasoAtoresTest extends TestCase
         $this->actingAs($user);
 
         $atores = Atores::factory()->count(3)->create();
-
         $response = $this->get(route('atores.list'));
 
         foreach ($atores as $ator) {
