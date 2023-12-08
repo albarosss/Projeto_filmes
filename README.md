@@ -1,1 +1,1 @@
-# Projeto_filmes
+Plataforma para Avaliação de Filmes utilizando uma Arquitetura Orientada a Serviços
