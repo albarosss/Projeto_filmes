@@ -10,8 +10,6 @@ const runMoviesFetching = async () =>
 {
     const genres = {};
     const apiKey = 'bf1ddac8920d395547c13e1bad46874c';
-    const moviesPerPage = 20;
-    const delayBetweenRequests = 500;
 
     const fetchMovieDetails = async (movie) => {
         const movieId = movie.id;
@@ -49,16 +47,13 @@ const runMoviesFetching = async () =>
 
             const atorPrincipal = cast.length > 0 ? cast[0].name : 'Ator principal desconhecido';
 
-            // Tratando a descrição para evitar valores nulos
             const descricao = movieDetails.overview || 'Sem descrição disponível';
 
             const categorias = movieDetails.genres.map(genre => genre.name).join(', ');
             const categoria = categorias.split(',');
 
-            // Verificar se a URL da imagem é nula antes de construir o URL
             const imagemUrl = movieDetails.poster_path ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}` : null;
 
-            // Se a URL da imagem for nula, ignore o filme
             if (!imagemUrl) {
                 return;
             }
@@ -79,56 +74,42 @@ const runMoviesFetching = async () =>
         }
     };
 
-    const fetchMovies = async (startPage, endPage, genreId, releaseYear) => {
+    const fetchMovies = async (pageNumber) => {
+        const movieListUrl = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=pt-BR&page=${pageNumber}`;
+
+        try {
+            const response = await fetch(movieListUrl);
+
+            if (!response.ok) {
+                throw new Error(`Falha ao obter a lista de filmes. Página: ${pageNumber}`);
+            }
+
+            const data = await response.json();
+            const movies = data.results;
+
+            for (const movie of movies) {
+                await fetchMovieDetails(movie);
+
+                if (Object.keys(genres).length >= 1000) {
+                    return; // Stop fetching if already collected 1000 movies
+                }
+            }
+        } catch (error) {
+            console.error(`Erro ao obter filmes. Página: ${pageNumber}`, error);
+        }
+    };
+
+    const fetchMoviesRecursively = async (startPage, endPage,) => {
         let pageNumber = startPage;
-        let totalMoviesProcessed = 0;
 
-        while (pageNumber <= endPage) {
-            const movieListUrl = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=pt-BR&page=${pageNumber}&with_genres=${genreId}&primary_release_year=${releaseYear}`;
-
-            try {
-                const response = await fetch(movieListUrl);
-
-                if (!response.ok) {
-                    throw new Error(`Falha ao obter a lista de filmes. Página: ${pageNumber}`);
-                }
-
-                const data = await response.json();
-                const movies = data.results;
-
-                await Promise.all(movies.map(movie => fetchMovieDetails(movie)));
-
-                totalMoviesProcessed += movies.length;
-                pageNumber++;
-            } catch (error) {
-                console.error(`Erro ao obter filmes. Página: ${pageNumber}`, error);
-                break;
-            }
-
-            // Um intervalo antes de fazer a próxima solicitação
-            await new Promise(resolve => setTimeout(resolve, delayBetweenRequests));
-        }
-
-        return totalMoviesProcessed;
-    };
-
-    const fetchMoviesRecursively = async (startPage, endPage, targetMovieCount, genreId, releaseYear) => {
-        if (startPage <= endPage) {
-            const currentMovies = await fetchMovies(startPage, endPage, genreId, releaseYear);
-
-            if (currentMovies !== undefined) {
-                const currentMovieCount = currentMovies.length;
-
-                if (currentMovieCount < targetMovieCount) {
-                    await fetchMoviesRecursively(endPage + 1, endPage + 50, targetMovieCount, genreId, releaseYear);
-                }
-            } else {
-                console.error('Erro ao obter filmes. A função fetchMovies não retornou dados.');
-            }
+        while (pageNumber <= endPage && Object.keys(genres).length < 1000) {
+            await fetchMovies(pageNumber);
+            pageNumber++;
         }
     };
 
-    await fetchMoviesRecursively(1, 5, 10000, 28, 2022);
+
+    await fetchMoviesRecursively(1, 5);
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
     const filmesArrays = {};

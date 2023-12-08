@@ -13,18 +13,71 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\DiretoresController;
 use App\Http\Controllers\AtoresController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FilmesRestController;
+use App\Http\Controllers\AtoresRestController;
+use App\Http\Controllers\DiretoresRestController;
+use App\Http\Controllers\UsersRestController;
+
+
+
 
 Route::get('/', function () {
     return redirect('/filmes');
 });
 
-Route::get('/filmes/random',  [FilmesController::class, 'getRandom']);
+    //  FILMES
 
-Route::get('/filmes/search', [FilmesController::class, 'search']);
+    Route::get('/filmes/random',  [FilmesController::class, 'getRandom']);
 
-Route::get('filmes/genero/{genero}', [FilmesController::class, 'genero']);
+    Route::get('/filmes/search', [FilmesController::class, 'search']);
 
-Route::middleware('guest')->group(function () {
+    Route::get('filmes/genero/{genero}', [FilmesController::class, 'genero']);
+
+    //  END FILMES
+
+    Route::middleware('guest')->group(function () {
+
+    // ROTAS REST DE USUÁRIO
+
+    Route::get('/api/users', [UsersRestController::class, 'index']);
+    Route::get('/api/users/{id}', [UsersRestController::class, 'show']);
+    Route::post('/api/users', [UsersRestController::class, 'store']);
+    Route::put('/api/users/{id}', [UsersRestController::class, 'update']);
+    Route::delete('/api/users/{id}', [UsersRestController::class, 'destroy']);
+
+    // FINAL ROTAS REST DE USÁRIOS
+
+    // ROTAS REST DE DIRETORES
+
+    Route::get('/api/diretores', [DiretoresRestController::class, 'index']);
+    Route::get('/api/diretores/{id}', [DiretoresRestController::class, 'show']);
+    Route::post('/api/diretores', [DiretoresRestController::class, 'store']);
+    Route::put('/api/diretores/{id}', [DiretoresRestController::class, 'update']);
+    Route::delete('/api/diretores/{id}', [DiretoresRestController::class, 'destroy']);
+
+    // FINAL ROTAS REST DE DIRETORES
+
+    // ROTAS REST DE ATORES
+
+    Route::get('/api/atores', [AtoresRestController::class, 'index']);
+    Route::get('/api/atores/{id}', [AtoresRestController::class, 'show']);
+    Route::post('/api/atores', [AtoresRestController::class, 'store']);
+    Route::put('/api/atores/{id}', [AtoresRestController::class, 'update']);
+    Route::delete('/api/atores/{id}', [AtoresRestController::class, 'destroy']);
+
+    // FINAL ROTAS REST DE ATORES
+
+    // ROTAS REST DE FILMES
+
+    Route::get('/api/filmes', [FilmesRestController::class, 'index']);
+    Route::get('/api/filmes/{id}', [FilmesRestController::class, 'show']);
+    Route::post('/api/filmes', [FilmesRestController::class, 'store']);
+    Route::put('/api/filmes/{id}', [FilmesRestController::class, 'update']);
+    Route::delete('/api/filmes/{id}', [FilmesRestController::class, 'destroy']);
+
+    // FINAL ROTA REST DE FILMES
+
+    // LOGIN
 
     Route::get('register', [RegisteredUserController::class, 'create'])
                 ->name('register');
@@ -47,13 +100,21 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
                 ->name('password.update');
+
+    // END LOGIN
 });
+
+    // FILMES
 
 Route::resource('/filmes', FilmesController::class)
     ->except(['show']);
 
 Route::get('/filmes/{filmes}/filmes', [FilmesController::class, 'saibaMais'])
 ->name('filmes.saiba_mais');
+
+Route::get('/filmes/search', [FilmesController::class, 'search'])->name('filmes.search');
+
+    // END FILMES
 
 
 Route::middleware(['auth', 'admin'])->group(function ()
@@ -82,6 +143,9 @@ Route::middleware(['auth', 'admin'])->group(function ()
 
 
 Route::middleware('auth')->group(function () {
+
+    // AUTENTICAÇÃO
+
     Route::get('verify-email', [EmailVerificationPromptController::class, '__invoke'])
                 ->name('verification.notice');
 
@@ -102,6 +166,10 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->name('logout');
 
+    // END AUTENTICAÇÃO
+
+    // USERS
+
     Route::get('/users/editar', [UsersController::class, 'editar'])->name('users.editar');
 
     Route::put('/users/atualizar', [UsersController::class, 'atualizar'])->name('users.atualizar');
@@ -110,10 +178,15 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/users/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
 
+    // END USERS
+
+    // AVALIAÇÃO
+
     Route::post('/filmes/{filmes}/comentar', [FilmesController::class, 'comentar'])
     ->name('filmes.comentar');
+
+    // END AVALIAÇÃO
 
 });
 
 
-Route::get('/filmes/search', [FilmesController::class, 'search'])->name('filmes.search');
